@@ -24,33 +24,31 @@ void close();
 
 /* Global Variables */
 // The window we'll be rendering to
-SDL_Window *gWindow{nullptr};
+SDL_Window *gWindow{};
 
 // The surface contained by the window
-SDL_Surface *gScreenSurface{nullptr};
+SDL_Surface *gScreenSurface{};
 
 // The image we will load and show on the screen
-SDL_Surface *gHelloWorld{nullptr};
+SDL_Surface *gHelloWorld{};
 
 /* Function Implementations */
 bool init()
 {
-    // Initialization flag
-    bool success{true};
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) == false)
+    if (!SDL_Init(SDL_INIT_VIDEO))
     {
         SDL_Log("SDL could not initialize! SDL error: %s\n", SDL_GetError());
-        success = false;
+        return false;
     }
     else
     {
         // Create window
-        if (gWindow = SDL_CreateWindow("SDL3 Tutorial: Hello SDL3", kScreenWidth, kScreenHeight, 0); gWindow == nullptr)
+        if (gWindow = SDL_CreateWindow("SDL3 Tutorial: Hello SDL3", kScreenWidth, kScreenHeight, 0); !gWindow)
         {
             SDL_Log("Window could not be created! SDL error: %s\n", SDL_GetError());
-            success = false;
+            return false;
         }
         else
         {
@@ -59,23 +57,21 @@ bool init()
         }
     }
 
-    return success;
+    return true;
 }
 
 bool loadMedia()
 {
-    // File loading flag
-    bool success{true};
 
     // Load splash image
-    std::string imagePath{"01-hello-sdl3/hello-sdl3.bmp"};
-    if (gHelloWorld = SDL_LoadBMP(imagePath.c_str()); gHelloWorld == nullptr)
+    std::string imagePath{"assets\\hello-sdl3.bmp"};
+    if (gHelloWorld = SDL_LoadBMP(imagePath.c_str()); !gHelloWorld)
     {
         SDL_Log("Unable to load image %s! SDL Error: %s\n", imagePath.c_str(), SDL_GetError());
-        success = false;
+        return false;
     }
 
-    return success;
+    return true;
 }
 
 void close()
@@ -99,7 +95,7 @@ int main(int argc, char *args[])
     int exitCode{0};
 
     // Initialize
-    if (init() == false)
+    if (!init())
     {
         SDL_Log("Unable to initialize program!\n");
         exitCode = 1;
@@ -107,7 +103,7 @@ int main(int argc, char *args[])
     else
     {
         // Load media
-        if (loadMedia() == false)
+        if (!loadMedia())
         {
             SDL_Log("Unable to load media!\n");
             exitCode = 2;
@@ -122,10 +118,10 @@ int main(int argc, char *args[])
             SDL_zero(e);
 
             // The main loop
-            while (quit == false)
+            while (!quit)
             {
                 // Get event data
-                while (SDL_PollEvent(&e) == true)
+                while (SDL_PollEvent(&e))
                 {
                     // If event is quit type
                     if (e.type == SDL_EVENT_QUIT)
