@@ -8,7 +8,7 @@
 class Texture
 {
 public:
-    Texture();
+    Texture(SDL_Renderer &renderer);
     ~Texture();
 
     // Loads texture from disk
@@ -28,6 +28,8 @@ public:
 private:
     // Contains texture data
     SDL_Texture *mTexture{};
+
+    SDL_Renderer &mRenderer;
 
     // Texture dimensions
     int mWidth{};

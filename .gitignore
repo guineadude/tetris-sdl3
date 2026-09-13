@@ -26,3 +26,6 @@ compile_commands.json
 *.swp
 *.swo
 .DS_Store
+
+# Machine-specific CMake presets (library paths differ per machine)
+CMakeUserPresets.json
