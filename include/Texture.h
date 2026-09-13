@@ -2,6 +2,7 @@
 #define TEXTURE_H
 
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 #include <string>
 
 class Texture
@@ -11,7 +12,7 @@ public:
     ~Texture();
 
     // Loads texture from disk
-    auto loadFromFile(std::string path) const -> bool;
+    auto loadFromFile(std::string path) -> bool;
 
     // Cleans up texture
     auto destroy() -> void;
