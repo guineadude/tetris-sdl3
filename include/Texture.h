@@ -21,9 +21,9 @@ public:
     auto render(float x, float y) const -> void;
 
     // Gets texture attributes
-    auto getWidth() const -> int;
-    auto getHeight() const -> int;
-    auto isLoaded() const -> bool;
+    auto getWidth() const -> int { return mWidth; }
+    auto getHeight() const -> int { return mHeight; }
+    auto isLoaded() const -> bool { return mTexture != nullptr; }
 
 private:
     // Contains texture data

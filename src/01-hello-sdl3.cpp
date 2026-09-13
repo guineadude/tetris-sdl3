@@ -6,7 +6,7 @@ and may not be redistributed without written permission.*/
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <string>
-
+#include "Texture.h"
 /* Constants */
 // Screen dimension constants
 constexpr int kScreenWidth{640};
@@ -17,7 +17,7 @@ constexpr int kScreenHeight{480};
 bool init();
 
 // Loads media
-bool loadMedia();
+bool loadMedia(Texture &texture);
 
 // Frees media and shuts down SDL
 void close();
@@ -26,11 +26,8 @@ void close();
 // The window we'll be rendering to
 SDL_Window *gWindow{};
 
-// The surface contained by the window
-SDL_Surface *gScreenSurface{};
-
-// The image we will load and show on the screen
-SDL_Surface *gHelloWorld{};
+// The renderer used to draw to the window
+SDL_Renderer *gRenderer{};
 
 /* Function Implementations */
 bool init()
@@ -44,30 +41,24 @@ bool init()
     }
     else
     {
-        // Create window
-        if (gWindow = SDL_CreateWindow("SDL3 Tutorial: Hello SDL3", kScreenWidth, kScreenHeight, 0); !gWindow)
+        // Create window and renderer
+        if (SDL_CreateWindowAndRenderer("SDL3 Tutorial: Hello SDL3", kScreenWidth, kScreenHeight, 0, &gWindow, &gRenderer); !gWindow || !gRenderer)
         {
-            SDL_Log("Window could not be created! SDL error: %s\n", SDL_GetError());
+            SDL_Log("Window / Renderercould not be created! SDL error: %s\n", SDL_GetError());
             return false;
-        }
-        else
-        {
-            // Get window surface
-            gScreenSurface = SDL_GetWindowSurface(gWindow);
         }
     }
 
     return true;
 }
 
-bool loadMedia()
+bool loadMedia(Texture &texture)
 {
 
     // Load splash image
-    std::string imagePath{"assets\\hello-sdl3.bmp"};
-    if (gHelloWorld = SDL_LoadBMP(imagePath.c_str()); !gHelloWorld)
+    if (!texture.loadFromFile("assets\\hello-sdl3.bmp"))
     {
-        SDL_Log("Unable to load image %s! SDL Error: %s\n", imagePath.c_str(), SDL_GetError());
+        SDL_Log("Unable to load image %s! SDL Error: %s\n", "assets\\hello-sdl3.bmp", SDL_GetError());
         return false;
     }
 
@@ -76,14 +67,12 @@ bool loadMedia()
 
 void close()
 {
-    // Clean up surface
-    SDL_DestroySurface(gHelloWorld);
-    gHelloWorld = nullptr;
-
     // Destroy window
     SDL_DestroyWindow(gWindow);
     gWindow = nullptr;
-    gScreenSurface = nullptr;
+
+    SDL_DestroyRenderer(gRenderer);
+    gRenderer = nullptr;
 
     // Quit SDL subsystems
     SDL_Quit();
@@ -102,8 +91,9 @@ int main(int argc, char *args[])
     }
     else
     {
+        Texture pngTexture{*gRenderer};
         // Load media
-        if (!loadMedia())
+        if (!loadMedia(pngTexture))
         {
             SDL_Log("Unable to load media!\n");
             exitCode = 2;
@@ -131,14 +121,15 @@ int main(int argc, char *args[])
                     }
                 }
 
-                // Fill the surface white
-                SDL_FillSurfaceRect(gScreenSurface, nullptr, SDL_MapSurfaceRGB(gScreenSurface, 0xFF, 0xFF, 0xFF));
+                // Fill the background white
+                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(gRenderer);
 
                 // Render image on screen
-                SDL_BlitSurface(gHelloWorld, nullptr, gScreenSurface, nullptr);
+                pngTexture.render(0.f, 0.f);
 
-                // Update the surface
-                SDL_UpdateWindowSurface(gWindow);
+                // Update screen
+                SDL_RenderPresent(gRenderer);
             }
         }
     }

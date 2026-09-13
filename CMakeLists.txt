@@ -36,3 +36,18 @@ target_link_libraries(tetris PRIVATE
     SDL3
     SDL3_image
 )
+
+add_custom_command(TARGET tetris POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${SDL3_ROOT}/bin/SDL3.dll"
+        "${SDL3_IMAGE_ROOT}/bin/SDL3_image.dll"
+        "$<TARGET_FILE_DIR:tetris>"
+    COMMENT "Copying SDL3 runtime DLLs next to the built executable"
+)
+
+add_custom_command(TARGET tetris POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/assets"
+        "$<TARGET_FILE_DIR:tetris>/assets"
+    COMMENT "Copying assets/ next to the built executable"
+)

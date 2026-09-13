@@ -12,6 +12,11 @@ Texture::~Texture()
 
 auto Texture::destroy() -> void
 {
+    // Clean up texture
+    SDL_DestroyTexture(mTexture);
+    mTexture = nullptr;
+    mWidth = 0;
+    mHeight = 0;
 }
 
 auto Texture::loadFromFile(std::string path) -> bool
@@ -46,4 +51,13 @@ auto Texture::loadFromFile(std::string path) -> bool
 
     // Return success if texture loaded
     return mTexture != nullptr;
+}
+
+auto Texture::render(float x, float y) const -> void
+{
+    // Set texture position
+    SDL_FRect dstRect{x, y, static_cast<float>(mWidth), static_cast<float>(mHeight)};
+
+    // Render texture
+    SDL_RenderTexture(&mRenderer, mTexture, nullptr, &dstRect);
 }
