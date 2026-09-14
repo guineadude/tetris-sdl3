@@ -92,10 +92,10 @@ int main(int argc, char *args[])
     }
     else
     {
-        Texture upTexture{*gRenderer}, downTexture{*gRenderer}, leftTexture{*gRenderer}, rightTexture{*gRenderer};
-
+        Texture background{*gRenderer};
+        Texture colourKeyedCharacter{*gRenderer};
         // Load media
-        if (!loadMedia(upTexture, "assets\\up.png") || !loadMedia(downTexture, "assets\\down.png") || !loadMedia(leftTexture, "assets\\left.png") || !loadMedia(rightTexture, "assets\\right.png"))
+        if (!loadMedia(background, "assets\\background.png") || !loadMedia(colourKeyedCharacter, "assets\\foo.png"))
         {
             SDL_Log("Unable to load media!\n");
             exitCode = 2;
@@ -107,7 +107,6 @@ int main(int argc, char *args[])
         SDL_Event e;
         SDL_zero(e);
 
-        Texture *currentTexture{&upTexture};
         SDL_Color bgColor{0xFF, 0xFF, 0xFF, 0xFF};
 
         // Fill the background white
@@ -126,38 +125,17 @@ int main(int argc, char *args[])
                     quit = true;
                 }
 
-                else if (e.type == SDL_EVENT_KEY_DOWN)
+                if (e.type == SDL_EVENT_KEY_DOWN && e.key.key == SDLK_ESCAPE)
                 {
-                    switch (e.key.key)
-                    {
-                    case SDLK_UP:
-                        currentTexture = &upTexture;
-                        bgColor = {0xFF, 0x00, 0x00, 0xFF};
-                        break;
-                    case SDLK_DOWN:
-                        currentTexture = &downTexture;
-                        bgColor = {0x00, 0xFF, 0x00, 0xFF};
-                        break;
-                    case SDLK_LEFT:
-                        currentTexture = &leftTexture;
-                        bgColor = {0xFF, 0xFF, 0x00, 0xFF};
-                        break;
-                    case SDLK_RIGHT:
-                        currentTexture = &rightTexture;
-                        bgColor = {0x00, 0x00, 0xFF, 0xFF};
-                        break;
-                    case SDLK_ESCAPE:
-                        quit = true;
-                        break;
-                    default:
-                        break;
-                    }
+                    quit = true;
                 }
             }
 
             SDL_SetRenderDrawColor(gRenderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
             SDL_RenderClear(gRenderer);
-            currentTexture->render((kScreenWidth - currentTexture->getWidth()) * 0.5f, (kScreenHeight - currentTexture->getHeight()) * 0.5f);
+
+            background.render(0.0f, 0.0f);
+            colourKeyedCharacter.render(240.0f, 190.0f);
 
             // Update screen
             SDL_RenderPresent(gRenderer);
