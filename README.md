@@ -14,8 +14,8 @@ Build a "Nasty Tetris" style game while learning SDL3 fundamentals, including:
 ## Project Structure
 
 - `src/` — source files
-- `include/` — header files
 - `assets/` — images, fonts, sounds, and other game assets
+- `CMakeLists.txt` — CMake build configuration
 
 ## Build
 Build instructions will be added as the project setup evolves.
