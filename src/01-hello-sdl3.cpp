@@ -6,7 +6,7 @@ and may not be redistributed without written permission.*/
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <string>
-
+#include "Texture.h"
 /* Constants */
 // Screen dimension constants
 constexpr int kScreenWidth{640};
@@ -17,77 +17,62 @@ constexpr int kScreenHeight{480};
 bool init();
 
 // Loads media
-bool loadMedia();
+bool loadMedia(Texture &texture);
 
 // Frees media and shuts down SDL
 void close();
 
 /* Global Variables */
 // The window we'll be rendering to
-SDL_Window *gWindow{nullptr};
+SDL_Window *gWindow{};
 
-// The surface contained by the window
-SDL_Surface *gScreenSurface{nullptr};
-
-// The image we will load and show on the screen
-SDL_Surface *gHelloWorld{nullptr};
+// The renderer used to draw to the window
+SDL_Renderer *gRenderer{};
 
 /* Function Implementations */
 bool init()
 {
-    // Initialization flag
-    bool success{true};
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) == false)
+    if (!SDL_Init(SDL_INIT_VIDEO))
     {
         SDL_Log("SDL could not initialize! SDL error: %s\n", SDL_GetError());
-        success = false;
+        return false;
     }
     else
     {
-        // Create window
-        if (gWindow = SDL_CreateWindow("SDL3 Tutorial: Hello SDL3", kScreenWidth, kScreenHeight, 0); gWindow == nullptr)
+        // Create window and renderer
+        if (SDL_CreateWindowAndRenderer("SDL3 Tutorial: Hello SDL3", kScreenWidth, kScreenHeight, 0, &gWindow, &gRenderer); !gWindow || !gRenderer)
         {
-            SDL_Log("Window could not be created! SDL error: %s\n", SDL_GetError());
-            success = false;
-        }
-        else
-        {
-            // Get window surface
-            gScreenSurface = SDL_GetWindowSurface(gWindow);
+            SDL_Log("Window / Renderercould not be created! SDL error: %s\n", SDL_GetError());
+            return false;
         }
     }
 
-    return success;
+    return true;
 }
 
-bool loadMedia()
+bool loadMedia(Texture &texture)
 {
-    // File loading flag
-    bool success{true};
 
     // Load splash image
-    std::string imagePath{"01-hello-sdl3/hello-sdl3.bmp"};
-    if (gHelloWorld = SDL_LoadBMP(imagePath.c_str()); gHelloWorld == nullptr)
+    if (!texture.loadFromFile("assets\\hello-sdl3.bmp"))
     {
-        SDL_Log("Unable to load image %s! SDL Error: %s\n", imagePath.c_str(), SDL_GetError());
-        success = false;
+        SDL_Log("Unable to load image %s! SDL Error: %s\n", "assets\\hello-sdl3.bmp", SDL_GetError());
+        return false;
     }
 
-    return success;
+    return true;
 }
 
 void close()
 {
-    // Clean up surface
-    SDL_DestroySurface(gHelloWorld);
-    gHelloWorld = nullptr;
-
     // Destroy window
     SDL_DestroyWindow(gWindow);
     gWindow = nullptr;
-    gScreenSurface = nullptr;
+
+    SDL_DestroyRenderer(gRenderer);
+    gRenderer = nullptr;
 
     // Quit SDL subsystems
     SDL_Quit();
@@ -99,15 +84,16 @@ int main(int argc, char *args[])
     int exitCode{0};
 
     // Initialize
-    if (init() == false)
+    if (!init())
     {
         SDL_Log("Unable to initialize program!\n");
         exitCode = 1;
     }
     else
     {
+        Texture pngTexture{*gRenderer};
         // Load media
-        if (loadMedia() == false)
+        if (!loadMedia(pngTexture))
         {
             SDL_Log("Unable to load media!\n");
             exitCode = 2;
@@ -122,10 +108,10 @@ int main(int argc, char *args[])
             SDL_zero(e);
 
             // The main loop
-            while (quit == false)
+            while (!quit)
             {
                 // Get event data
-                while (SDL_PollEvent(&e) == true)
+                while (SDL_PollEvent(&e))
                 {
                     // If event is quit type
                     if (e.type == SDL_EVENT_QUIT)
@@ -135,14 +121,15 @@ int main(int argc, char *args[])
                     }
                 }
 
-                // Fill the surface white
-                SDL_FillSurfaceRect(gScreenSurface, nullptr, SDL_MapSurfaceRGB(gScreenSurface, 0xFF, 0xFF, 0xFF));
+                // Fill the background white
+                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(gRenderer);
 
                 // Render image on screen
-                SDL_BlitSurface(gHelloWorld, nullptr, gScreenSurface, nullptr);
+                pngTexture.render(0.f, 0.f);
 
-                // Update the surface
-                SDL_UpdateWindowSurface(gWindow);
+                // Update screen
+                SDL_RenderPresent(gRenderer);
             }
         }
     }
