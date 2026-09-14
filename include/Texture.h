@@ -8,8 +8,13 @@
 class Texture
 {
 public:
+    // special functions
     Texture(SDL_Renderer &renderer);
     ~Texture();
+    Texture(const Texture &) = delete;
+    Texture &operator=(const Texture &) = delete;
+    Texture(Texture &&) = delete;
+    Texture &operator=(Texture &&) = delete;
 
     // Loads texture from disk
     auto loadFromFile(std::string path) -> bool;
