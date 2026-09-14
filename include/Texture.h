@@ -4,7 +4,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <string>
-
+#include <string_view>
 class Texture
 {
 public:
@@ -17,7 +17,7 @@ public:
     Texture &operator=(Texture &&) = delete;
 
     // Loads texture from disk
-    auto loadFromFile(std::string path) -> bool;
+    auto loadFromFile(std::string_view path) -> bool;
 
     // Cleans up texture
     auto destroy() -> void;

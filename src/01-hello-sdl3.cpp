@@ -6,6 +6,7 @@ and may not be redistributed without written permission.*/
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <string>
+#include <string_view>
 #include "Texture.h"
 /* Constants */
 // Screen dimension constants
@@ -17,7 +18,7 @@ constexpr int kScreenHeight{480};
 bool init();
 
 // Loads media
-bool loadMedia(Texture &texture);
+bool loadMedia(Texture &texture, std::string_view path);
 
 // Frees media and shuts down SDL
 void close();
@@ -52,13 +53,13 @@ bool init()
     return true;
 }
 
-bool loadMedia(Texture &texture)
+bool loadMedia(Texture &texture, std::string_view path)
 {
 
     // Load splash image
-    if (!texture.loadFromFile("assets\\hello-sdl3.bmp"))
+    if (!texture.loadFromFile(path))
     {
-        SDL_Log("Unable to load image %s! SDL Error: %s\n", "assets\\hello-sdl3.bmp", SDL_GetError());
+        SDL_Log("Unable to load image %.*s! SDL Error: %s\n", static_cast<int>(path.size()), path.data(), SDL_GetError());
         return false;
     }
 
@@ -91,46 +92,75 @@ int main(int argc, char *args[])
     }
     else
     {
-        Texture pngTexture{*gRenderer};
+        Texture upTexture{*gRenderer}, downTexture{*gRenderer}, leftTexture{*gRenderer}, rightTexture{*gRenderer};
+
         // Load media
-        if (!loadMedia(pngTexture))
+        if (!loadMedia(upTexture, "assets\\up.png") || !loadMedia(downTexture, "assets\\down.png") || !loadMedia(leftTexture, "assets\\left.png") || !loadMedia(rightTexture, "assets\\right.png"))
         {
             SDL_Log("Unable to load media!\n");
             exitCode = 2;
         }
-        else
+        // The quit flag
+        bool quit{false};
+
+        // The event data
+        SDL_Event e;
+        SDL_zero(e);
+
+        Texture *currentTexture{&upTexture};
+        SDL_Color bgColor{0xFF, 0xFF, 0xFF, 0xFF};
+
+        // Fill the background white
+        SDL_SetRenderDrawColor(gRenderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+
+        // The main loop
+        while (!quit)
         {
-            // The quit flag
-            bool quit{false};
-
-            // The event data
-            SDL_Event e;
-            SDL_zero(e);
-
-            // The main loop
-            while (!quit)
+            // Get event data
+            while (SDL_PollEvent(&e))
             {
-                // Get event data
-                while (SDL_PollEvent(&e))
+                // If event is quit type
+                if (e.type == SDL_EVENT_QUIT)
                 {
-                    // If event is quit type
-                    if (e.type == SDL_EVENT_QUIT)
-                    {
-                        // End the main loop
-                        quit = true;
-                    }
+                    // End the main loop
+                    quit = true;
                 }
 
-                // Fill the background white
-                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-                SDL_RenderClear(gRenderer);
-
-                // Render image on screen
-                pngTexture.render(0.f, 0.f);
-
-                // Update screen
-                SDL_RenderPresent(gRenderer);
+                else if (e.type == SDL_EVENT_KEY_DOWN)
+                {
+                    switch (e.key.key)
+                    {
+                    case SDLK_UP:
+                        currentTexture = &upTexture;
+                        bgColor = {0xFF, 0x00, 0x00, 0xFF};
+                        break;
+                    case SDLK_DOWN:
+                        currentTexture = &downTexture;
+                        bgColor = {0x00, 0xFF, 0x00, 0xFF};
+                        break;
+                    case SDLK_LEFT:
+                        currentTexture = &leftTexture;
+                        bgColor = {0xFF, 0xFF, 0x00, 0xFF};
+                        break;
+                    case SDLK_RIGHT:
+                        currentTexture = &rightTexture;
+                        bgColor = {0x00, 0x00, 0xFF, 0xFF};
+                        break;
+                    case SDLK_ESCAPE:
+                        quit = true;
+                        break;
+                    default:
+                        break;
+                    }
+                }
             }
+
+            SDL_SetRenderDrawColor(gRenderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+            SDL_RenderClear(gRenderer);
+            currentTexture->render((kScreenWidth - currentTexture->getWidth()) * 0.5f, (kScreenHeight - currentTexture->getHeight()) * 0.5f);
+
+            // Update screen
+            SDL_RenderPresent(gRenderer);
         }
     }
 

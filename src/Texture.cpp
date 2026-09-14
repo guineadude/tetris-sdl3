@@ -19,16 +19,16 @@ auto Texture::destroy() -> void
     mHeight = 0;
 }
 
-auto Texture::loadFromFile(std::string path) -> bool
+auto Texture::loadFromFile(std::string_view path) -> bool
 {
 
     // Destroy any existing texture
     destroy();
 
     // Load surface
-    if (SDL_Surface *loadedSurface = IMG_Load(path.c_str()); !loadedSurface)
+    if (SDL_Surface *loadedSurface = IMG_Load(path.data()); !loadedSurface)
     {
-        SDL_Log("Unable to load image %s! SDL_image error: %s\n", path.c_str(), SDL_GetError());
+        SDL_Log("Unable to load image %.*s! SDL_image error: %s\n", static_cast<int>(path.size()), path.data(), SDL_GetError());
         return false;
     }
     else
