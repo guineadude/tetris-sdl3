@@ -25,7 +25,7 @@ bool init();
 bool loadMedia(Texture &texture, std::string_view path);
 
 // handle input
-void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode);
+void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode, std::size_t *colorChannelsIndices);
 
 // Frees media and shuts down SDL
 void close();
@@ -99,9 +99,9 @@ int main(int argc, char *args[])
     }
     else
     {
-        Texture arrowTexture{*gRenderer};
+        Texture colorsTexture{*gRenderer};
         // Load media
-        if (!loadMedia(arrowTexture, "assets\\arrow.png"))
+        if (!loadMedia(colorsTexture, "assets\\colors.png"))
         {
             SDL_Log("Unable to load media!\n");
             exitCode = 2;
@@ -115,12 +115,7 @@ int main(int argc, char *args[])
 
         double degrees{};
         SDL_FlipMode flipMode{SDL_FLIP_NONE};
-        SDL_FPoint center{arrowTexture.getWidth() / 2.f, arrowTexture.getHeight() / 2.f};
-
-        SDL_Color bgColor{0xFF, 0xFF, 0xFF, 0xFF};
-
-        // Fill the background white
-        SDL_SetRenderDrawColor(gRenderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+        SDL_FPoint center{colorsTexture.getWidth() / 2.f, colorsTexture.getHeight() / 2.f};
 
         // Init sprite clip
         // constexpr float kSpriteSize = 100.f;
@@ -138,6 +133,20 @@ int main(int argc, char *args[])
         spriteSize.y =
             (static_cast<float>(kScreenHeight) - spriteSize.h) / 2.f;
 
+        // Initialize colors
+        std::size_t colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::MaxPlaceholder)];
+        colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureRed)] = 2;
+        colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureGreen)] = 2;
+        colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureBlue)] = 2;
+        colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureAlpha)] = 2;
+
+        colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundRed)] = 2;
+        colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundGreen)] = 2;
+        colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundBlue)] = 2;
+
+        // Initialize blending
+        colorsTexture.setBlending(SDL_BLENDMODE_BLEND);
+
         // The main loop
         while (!quit)
         {
@@ -148,13 +157,27 @@ int main(int argc, char *args[])
                     quit = true;
 
                 if (e.type == SDL_EVENT_KEY_DOWN)
-                    handleInput(e.key, degrees, flipMode);
+                    handleInput(e.key, degrees, flipMode, colorChannelsIndices);
             }
+
+            // Fill the background
+            SDL_SetRenderDrawColor(gRenderer,
+                                   Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundRed)]],
+                                   Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundGreen)]],
+                                   Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundBlue)]],
+                                   0xFF);
 
             // Clear screen
             SDL_RenderClear(gRenderer);
 
-            arrowTexture.render(spriteSize.x, spriteSize.y, nullptr, spriteSize.w, spriteSize.h, degrees, &center, flipMode);
+            // Set texture color and render
+            colorsTexture.setColor(
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureRed)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureGreen)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureBlue)]]);
+            colorsTexture.setAlpha(Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureAlpha)]]);
+
+            colorsTexture.render(spriteSize.x, spriteSize.y, nullptr, spriteSize.w, spriteSize.h, degrees, &center, flipMode);
             // Update screen
             SDL_RenderPresent(gRenderer);
         }
@@ -166,8 +189,11 @@ int main(int argc, char *args[])
     return exitCode;
 }
 
-void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode)
+void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode, std::size_t *colorChannelsIndices)
 {
+    // Sentinel: no color channel key was pressed this call
+    Texture::eColorChannel channelToUpdate{Texture::eColorChannel::MaxPlaceholder};
+
     switch (key.key)
     {
     case SDLK_LEFT:
@@ -184,6 +210,29 @@ void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode
         break;
     case SDLK_3:
         flipMode = SDL_FLIP_VERTICAL;
+        break; // Update texture color
+    case SDLK_A:
+        channelToUpdate = Texture::eColorChannel::TextureRed;
+        break;
+    case SDLK_S:
+        channelToUpdate = Texture::eColorChannel::TextureGreen;
+        break;
+    case SDLK_D:
+        channelToUpdate = Texture::eColorChannel::TextureBlue;
+        break;
+    case SDLK_F:
+        channelToUpdate = Texture::eColorChannel::TextureAlpha;
+        break;
+
+    // Update background color
+    case SDLK_Q:
+        channelToUpdate = Texture::eColorChannel::BackgroundRed;
+        break;
+    case SDLK_W:
+        channelToUpdate = Texture::eColorChannel::BackgroundGreen;
+        break;
+    case SDLK_E:
+        channelToUpdate = Texture::eColorChannel::BackgroundBlue;
         break;
     default:
         break;
@@ -193,4 +242,20 @@ void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode
     degrees = std::fmod(degrees, 360.0);
     if (degrees < 0.0)
         degrees += 360.0;
+
+    // If a channel key was pressed, cycle its magnitude and log all values
+    if (channelToUpdate != Texture::eColorChannel::MaxPlaceholder)
+    {
+        std::size_t &index{colorChannelsIndices[static_cast<std::size_t>(channelToUpdate)]};
+        index = (index + 1) % Texture::kColorMagnitudeCount;
+
+        SDL_Log("Texture - R:%d G:%d B:%d A:%d | Background - R:%d G:%d B:%d",
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureRed)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureGreen)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureBlue)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::TextureAlpha)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundRed)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundGreen)]],
+                Texture::kColorMagnitudes[colorChannelsIndices[static_cast<std::size_t>(Texture::eColorChannel::BackgroundBlue)]]);
+    }
 }

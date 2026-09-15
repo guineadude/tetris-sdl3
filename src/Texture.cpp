@@ -84,3 +84,18 @@ auto Texture::render(float x, float y, SDL_FRect *clip, float width, float heigh
     // Render texture
     SDL_RenderTextureRotated(&mRenderer, mTexture, clip, &dstRect, degrees, center, flipMode);
 }
+
+auto Texture::setColor(Uint8 r, Uint8 g, Uint8 b) -> void
+{
+    SDL_SetTextureColorMod(mTexture, r, g, b);
+}
+
+auto Texture::setAlpha(Uint8 alpha) -> void
+{
+    SDL_SetTextureAlphaMod(mTexture, alpha);
+}
+
+auto Texture::setBlending(SDL_BlendMode blendMode) -> void
+{
+    SDL_SetTextureBlendMode(mTexture, blendMode);
+}
