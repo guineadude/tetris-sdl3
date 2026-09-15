@@ -60,11 +60,27 @@ auto Texture::loadFromFile(std::string_view path) -> bool
     return mTexture != nullptr;
 }
 
-auto Texture::render(float x, float y) const -> void
+auto Texture::render(float x, float y, SDL_FRect *clip, float width, float height) const -> void
 {
-    // Set texture position
+    // Set texture pos
     SDL_FRect dstRect{x, y, static_cast<float>(mWidth), static_cast<float>(mHeight)};
 
+    if (clip)
+    {
+        dstRect.w = clip->w;
+        dstRect.h = clip->h;
+    }
+
+    // Resize if new dimensions are given
+    if (width > 0)
+    {
+        dstRect.w = width;
+    }
+    if (height > 0)
+    {
+        dstRect.h = height;
+    }
+
     // Render texture
-    SDL_RenderTexture(&mRenderer, mTexture, nullptr, &dstRect);
+    SDL_RenderTexture(&mRenderer, mTexture, clip, &dstRect);
 }

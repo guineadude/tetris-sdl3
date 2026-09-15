@@ -92,10 +92,9 @@ int main(int argc, char *args[])
     }
     else
     {
-        Texture background{*gRenderer};
-        Texture colourKeyedCharacter{*gRenderer};
+        Texture gSpriteSheetTexture{*gRenderer};
         // Load media
-        if (!loadMedia(background, "assets\\background.png") || !loadMedia(colourKeyedCharacter, "assets\\foo.png"))
+        if (!loadMedia(gSpriteSheetTexture, "assets\\dots.png"))
         {
             SDL_Log("Unable to load media!\n");
             exitCode = 2;
@@ -111,6 +110,13 @@ int main(int argc, char *args[])
 
         // Fill the background white
         SDL_SetRenderDrawColor(gRenderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+
+        // Init sprite clip
+        constexpr float kSpriteSize = 100.f;
+        SDL_FRect spriteClip{0.f, 0.f, kSpriteSize, kSpriteSize};
+
+        // Init sprite size
+        SDL_FRect spriteSize{0.f, 0.f, kSpriteSize, kSpriteSize};
 
         // The main loop
         while (!quit)
@@ -131,11 +137,60 @@ int main(int argc, char *args[])
                 }
             }
 
-            SDL_SetRenderDrawColor(gRenderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+            // Fill the background white
+            SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
             SDL_RenderClear(gRenderer);
 
-            background.render(0.0f, 0.0f);
-            colourKeyedCharacter.render(240.0f, 190.0f);
+            // Init sprite clip
+            constexpr float kSpriteSize = 100.f;
+            SDL_FRect spriteClip{0.f, 0.f, kSpriteSize, kSpriteSize};
+
+            // Init sprite size
+            SDL_FRect spriteSize{0.f, 0.f, kSpriteSize, kSpriteSize};
+
+            // Use top left sprite
+            spriteClip.x = 0.f;
+            spriteClip.y = 0.f;
+
+            // Set sprite size to original size
+            spriteSize.w = kSpriteSize;
+            spriteSize.h = kSpriteSize;
+
+            // Draw original sized sprite
+            gSpriteSheetTexture.render(0.f, 0.f, &spriteClip, spriteSize.w, spriteSize.h);
+
+            // Use top right sprite
+            spriteClip.x = kSpriteSize;
+            spriteClip.y = 0.f;
+
+            // Set sprite to half size
+            spriteSize.w = kSpriteSize * 0.5f;
+            spriteSize.h = kSpriteSize * 0.5f;
+
+            // Draw half size sprite
+            gSpriteSheetTexture.render(kScreenWidth - spriteSize.w, 0.f, &spriteClip, spriteSize.w, spriteSize.h);
+
+            // Use bottom left sprite
+            spriteClip.x = 0.f;
+            spriteClip.y = kSpriteSize;
+
+            // Set sprite to double size
+            spriteSize.w = kSpriteSize * 2.f;
+            spriteSize.h = kSpriteSize * 2.f;
+
+            // Draw double size sprite
+            gSpriteSheetTexture.render(0.f, kScreenHeight - spriteSize.h, &spriteClip, spriteSize.w, spriteSize.h);
+
+            // Use bottom right sprite
+            spriteClip.x = kSpriteSize;
+            spriteClip.y = kSpriteSize;
+
+            // Squish the sprite vertically
+            spriteSize.w = kSpriteSize;
+            spriteSize.h = kSpriteSize * 0.5f;
+
+            // Draw squished sprite
+            gSpriteSheetTexture.render(kScreenWidth - spriteSize.w, kScreenHeight - spriteSize.h, &spriteClip, spriteSize.w, spriteSize.h);
 
             // Update screen
             SDL_RenderPresent(gRenderer);
