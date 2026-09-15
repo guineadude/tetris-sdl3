@@ -8,7 +8,7 @@
 class Texture
 {
 public:
-    static constexpr float originalSize{-1.f};
+    static constexpr float kOriginalSize{-1.f};
 
     // special functions
     Texture(SDL_Renderer &renderer);
@@ -30,7 +30,7 @@ public:
     auto destroy() -> void;
 
     // Draws texture
-    auto render(float x, float y, SDL_FRect *clip = nullptr, float width = originalSize, float height = originalSize) const -> void;
+    void render(float x, float y, SDL_FRect *clip = nullptr, float width = kOriginalSize, float height = kOriginalSize, double degrees = 0.0, SDL_FPoint *center = nullptr, SDL_FlipMode flipMode = SDL_FLIP_NONE);
 
     // Gets texture attributes
     auto getWidth() const -> int { return mWidth; }

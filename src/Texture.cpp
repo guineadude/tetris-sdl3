@@ -60,7 +60,7 @@ auto Texture::loadFromFile(std::string_view path) -> bool
     return mTexture != nullptr;
 }
 
-auto Texture::render(float x, float y, SDL_FRect *clip, float width, float height) const -> void
+auto Texture::render(float x, float y, SDL_FRect *clip, float width, float height, double degrees, SDL_FPoint *center, SDL_FlipMode flipMode) -> void
 {
     // Set texture pos
     SDL_FRect dstRect{x, y, static_cast<float>(mWidth), static_cast<float>(mHeight)};
@@ -82,5 +82,5 @@ auto Texture::render(float x, float y, SDL_FRect *clip, float width, float heigh
     }
 
     // Render texture
-    SDL_RenderTexture(&mRenderer, mTexture, clip, &dstRect);
+    SDL_RenderTextureRotated(&mRenderer, mTexture, clip, &dstRect, degrees, center, flipMode);
 }

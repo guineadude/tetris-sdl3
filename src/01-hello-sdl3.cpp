@@ -5,6 +5,7 @@ and may not be redistributed without written permission.*/
 // Using SDL and STL string
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#include <cmath>
 #include <string>
 #include <string_view>
 #include "Texture.h"
@@ -12,6 +13,9 @@ and may not be redistributed without written permission.*/
 // Screen dimension constants
 constexpr int kScreenWidth{640};
 constexpr int kScreenHeight{480};
+
+// Degrees added/removed per rotation key press
+constexpr double kRotationStep{5.0};
 
 /* Function Prototypes */
 // Starts up SDL and creates window
@@ -21,7 +25,7 @@ bool init();
 bool loadMedia(Texture &texture, std::string_view path);
 
 // handle input
-void handleInput(SDL_KeyboardEvent &key);
+void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode);
 
 // Frees media and shuts down SDL
 void close();
@@ -109,6 +113,10 @@ int main(int argc, char *args[])
         SDL_Event e;
         SDL_zero(e);
 
+        double degrees{};
+        SDL_FlipMode flipMode{SDL_FLIP_NONE};
+        SDL_FPoint center{arrowTexture.getWidth() / 2.f, arrowTexture.getHeight() / 2.f};
+
         SDL_Color bgColor{0xFF, 0xFF, 0xFF, 0xFF};
 
         // Fill the background white
@@ -140,13 +148,13 @@ int main(int argc, char *args[])
                     quit = true;
 
                 if (e.type == SDL_EVENT_KEY_DOWN)
-                    handleInput(e.key);
+                    handleInput(e.key, degrees, flipMode);
             }
 
             // Clear screen
             SDL_RenderClear(gRenderer);
 
-            arrowTexture.render(spriteSize.x, spriteSize.y, nullptr, spriteSize.w, spriteSize.h);
+            arrowTexture.render(spriteSize.x, spriteSize.y, nullptr, spriteSize.w, spriteSize.h, degrees, &center, flipMode);
             // Update screen
             SDL_RenderPresent(gRenderer);
         }
@@ -158,17 +166,31 @@ int main(int argc, char *args[])
     return exitCode;
 }
 
-void handleInput(SDL_KeyboardEvent &key)
+void handleInput(SDL_KeyboardEvent &key, double &degrees, SDL_FlipMode &flipMode)
 {
     switch (key.key)
     {
     case SDLK_LEFT:
-        // Handle left arrow key press
+        degrees -= kRotationStep;
         break;
     case SDLK_RIGHT:
-        // Handle right arrow key press
+        degrees += kRotationStep;
+        break; // Set flip mode based on 1/2/3 key press
+    case SDLK_1:
+        flipMode = SDL_FLIP_HORIZONTAL;
+        break;
+    case SDLK_2:
+        flipMode = SDL_FLIP_NONE;
+        break;
+    case SDLK_3:
+        flipMode = SDL_FLIP_VERTICAL;
         break;
     default:
         break;
     }
+
+    // Keep degrees within [0, 360)
+    degrees = std::fmod(degrees, 360.0);
+    if (degrees < 0.0)
+        degrees += 360.0;
 }
