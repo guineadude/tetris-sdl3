@@ -22,6 +22,7 @@ endif()
 
 add_executable(tetris
     src/01-hello-sdl3.cpp
+    src/Button.cpp
     src/Texture.cpp
 )
 

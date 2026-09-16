@@ -60,29 +60,21 @@ auto Texture::loadFromFile(std::string_view path) -> bool
     return mTexture != nullptr;
 }
 
-auto Texture::render(float x, float y, SDL_FRect *clip, float width, float height, double degrees, SDL_FPoint *center, SDL_FlipMode flipMode) -> void
+auto Texture::render(float xPos, float yPos, SDL_FRect *clip, float clipSizeX, float clipSizeY) -> void
 {
-    // Set texture pos
-    SDL_FRect dstRect{x, y, static_cast<float>(mWidth), static_cast<float>(mHeight)};
+    SDL_FRect dstRect{xPos, yPos, clip ? clip->w : static_cast<float>(mWidth), clip ? clip->h : static_cast<float>(mHeight)};
 
-    if (clip)
+    if (clipSizeX > 0.0f)
     {
-        dstRect.w = clip->w;
-        dstRect.h = clip->h;
+        dstRect.w = clipSizeX;
     }
 
-    // Resize if new dimensions are given
-    if (width > 0)
+    if (clipSizeY > 0.0f)
     {
-        dstRect.w = width;
-    }
-    if (height > 0)
-    {
-        dstRect.h = height;
+        dstRect.h = clipSizeY;
     }
 
-    // Render texture
-    SDL_RenderTextureRotated(&mRenderer, mTexture, clip, &dstRect, degrees, center, flipMode);
+    SDL_RenderTexture(&mRenderer, mTexture, clip, &dstRect);
 }
 
 auto Texture::setColor(Uint8 r, Uint8 g, Uint8 b) -> void

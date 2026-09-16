@@ -10,24 +10,22 @@
 class Texture
 {
 public:
-    static constexpr int kColorMagnitudeCount = 3;
-    static constexpr Uint8 kColorMagnitudes[kColorMagnitudeCount] = {0x00, 0x7F, 0xFF};
+    // static constexpr int kColorMagnitudeCount = 3;
+    // static constexpr Uint8 kColorMagnitudes[kColorMagnitudeCount] = {0x00, 0x7F, 0xFF};
 
-    enum class eColorChannel
-    {
-        TextureRed = 0,
-        TextureGreen = 1,
-        TextureBlue = 2,
-        TextureAlpha = 3,
+    // enum class eColorChannel
+    // {
+    //     TextureRed = 0,
+    //     TextureGreen = 1,
+    //     TextureBlue = 2,
+    //     TextureAlpha = 3,
 
-        BackgroundRed = 4,
-        BackgroundGreen = 5,
-        BackgroundBlue = 6,
+    //     BackgroundRed = 4,
+    //     BackgroundGreen = 5,
+    //     BackgroundBlue = 6,
 
-        MaxPlaceholder = 7,
-    };
-
-    static constexpr float kOriginalSize{-1.f};
+    //     MaxPlaceholder = 7,
+    // };
 
     // special functions
     Texture(SDL_Renderer &renderer);
@@ -49,7 +47,7 @@ public:
     auto destroy() -> void;
 
     // Draws texture
-    void render(float x, float y, SDL_FRect *clip = nullptr, float width = kOriginalSize, float height = kOriginalSize, double degrees = 0.0, SDL_FPoint *center = nullptr, SDL_FlipMode flipMode = SDL_FLIP_NONE);
+    void render(float xPos, float yPos, SDL_FRect *clip = nullptr, float clipSizeX = 0.0f, float clipSizeY = 0.0f);
 
     // Sets color modulation
     void setColor(Uint8 r, Uint8 g, Uint8 b);
