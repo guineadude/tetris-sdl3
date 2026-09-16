@@ -60,6 +60,11 @@ public:
     // Sets blend mode
     void setBlending(SDL_BlendMode blendMode);
 
+#if defined(SDL_TTF_MAJOR_VERSION)
+    // Creates texture from text
+    bool loadFromRenderedText(std::string_view textureText, SDL_Color textColor, TTF_Font &font);
+#endif
+
     // Gets texture attributes
     auto getWidth() const -> int { return mWidth; }
     auto getHeight() const -> int { return mHeight; }

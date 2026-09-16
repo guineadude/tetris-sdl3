@@ -99,3 +99,34 @@ auto Texture::setBlending(SDL_BlendMode blendMode) -> void
 {
     SDL_SetTextureBlendMode(mTexture, blendMode);
 }
+
+#if defined(SDL_TTF_MAJOR_VERSION)
+auto Texture::loadFromRenderedText(std::string_view textureText, SDL_Color textColor, TTF_Font &font) -> bool
+{
+    destroy();
+
+    if (SDL_Surface *textSurface = TTF_RenderText_Blended(&font, textureText.data(), 0, textColor); !textSurface)
+    {
+        SDL_Log("Unable to render text surface! SDL_ttf Error: %s\n", SDL_GetError());
+        SDL_DestroySurface(textSurface);
+        return false;
+    }
+    else
+    {
+        if (mTexture = SDL_CreateTextureFromSurface(&mRenderer, textSurface); !mTexture)
+        {
+            SDL_Log("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+            SDL_DestroySurface(textSurface);
+            return false;
+        }
+        else
+        {
+            mWidth = textSurface->w;
+            mHeight = textSurface->h;
+        }
+        SDL_DestroySurface(textSurface);
+    }
+
+    return true;
+}
+#endif
