@@ -21,9 +21,9 @@ if(NOT SDL3_TTF_ROOT)
 endif()
 
 add_executable(tetris
-    src/01-hello-sdl3.cpp
-    src/Button.cpp
-    src/Texture.cpp
+    src/main.cpp
+    src/App.cpp
+    src/texture.cpp
 )
 
 target_include_directories(tetris PRIVATE
