@@ -1,6 +1,7 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
 
+#include <optional>
 #include <string_view>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -9,12 +10,18 @@ class Texture
 {
 private:
     SDL_Texture *m_texture{};
+    std::optional<SDL_Color> m_colorKey{};
     int m_width{};
     int m_height{};
 
 public:
-    Texture();
+    Texture(std::optional<SDL_Color> colorKey = std::nullopt);
     ~Texture();
+
+    Texture(const Texture &) = delete;
+    Texture &operator=(const Texture &) = delete;
+    Texture(Texture &&) = delete;
+    Texture &operator=(Texture &&) = delete;
 
     void destroy();
 

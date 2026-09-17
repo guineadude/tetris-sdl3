@@ -39,7 +39,7 @@ int App::run()
     int exitCode{};
     SDL_Event event;
     SDL_zero(event);
-    Texture imgToRender{};
+    Texture imgToRender{SDL_Color{0x00, 0x00, 0xFF, 0xFF}};
 
     if (!imgToRender.loadFromFile("assets\\button.png", m_renderer))
     {
