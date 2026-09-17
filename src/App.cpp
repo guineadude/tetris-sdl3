@@ -37,36 +37,41 @@ bool App::init()
 int App::run()
 {
     int exitCode{};
+
     SDL_Event event;
     SDL_zero(event);
-    Texture imgToRender{SDL_Color{0x00, 0x00, 0xFF, 0xFF}};
 
-    if (!imgToRender.loadFromFile("assets\\button.png", m_renderer))
+    addTexturesToArray(m_textureArray);
+
+    if (!initializeTextures(m_textureArray))
     {
-        SDL_Log("Failed to load image: %s", SDL_GetError());
-        exitCode = 2;
+        SDL_Log("Failed to initialize textures: %s", SDL_GetError());
+        return 2;
     }
 
     while (exitCode == 0)
     {
         handleEvents(&event, exitCode);
-        render(imgToRender);
+        render(m_textureArray);
     }
 
     return exitCode;
 }
 
-void App::render(Texture &texture)
+void App::render(std::array<TextureAsset, k_numTextures> &textures) const
 {
     SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(m_renderer);
 
-    texture.render(m_renderer);
+    for (auto &textureAsset : textures)
+    {
+        textureAsset.texture.render(m_renderer);
+    }
 
     SDL_RenderPresent(m_renderer);
 }
 
-void App::handleEvents(SDL_Event *event, int &exitCode)
+void App::handleEvents(SDL_Event *event, int &exitCode) const
 {
     while (SDL_PollEvent(event) == true && exitCode == 0)
     {
@@ -75,4 +80,27 @@ void App::handleEvents(SDL_Event *event, int &exitCode)
             exitCode = -1;
         }
     }
+}
+
+void App::addTexturesToArray(std::array<TextureAsset, k_numTextures> &textures)
+{
+    TextureAsset imgToRender{
+        Texture{SDL_Color{0x00, 0x00, 0xFF, 0xFF}},
+        "assets\\button.png"};
+
+    textures[0] = std::move(imgToRender);
+    // return true;
+}
+
+bool App::initializeTextures(std::array<TextureAsset, k_numTextures> &textures) const
+{
+    for (auto &textureAsset : textures)
+    {
+        if (!textureAsset.texture.loadFromFile(textureAsset.path.data(), m_renderer))
+        {
+            SDL_Log("Failed to load image: %s", SDL_GetError());
+            return false;
+        }
+    }
+    return true;
 }
