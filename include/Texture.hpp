@@ -3,11 +3,12 @@
 
 #include <string_view>
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 
 class Texture
 {
 private:
-    SDL_Surface *m_texture{};
+    SDL_Texture *m_texture{};
     int m_width{};
     int m_height{};
 
@@ -18,7 +19,7 @@ public:
     void destroy();
 
     bool loadFromFile(std::string_view path, SDL_Renderer *renderer);
-    void render(SDL_Renderer *renderer, float xPos, float yPos);
+    void render(SDL_Renderer *renderer, float xPos = 0.0F, float yPos = 0.0F);
     void render(SDL_Renderer *renderer,
                 const SDL_FRect &source,
                 const SDL_FRect &destination);

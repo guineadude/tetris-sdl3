@@ -5,6 +5,8 @@
 
 #include <string_view>
 
+#include "Texture.hpp"
+
 class App
 {
 public:
@@ -15,14 +17,14 @@ public:
     int run();
 
 private:
-    static constexpr int k_defaultWidth = 800;
-    static constexpr int k_defaultHeight = 600;
+    static constexpr int k_defaultWidth{800};
+    static constexpr int k_defaultHeight{600};
 
     SDL_Window *m_window{};
     SDL_Renderer *m_renderer{};
 
     void handleEvents(SDL_Event *event, int &exitCode);
-    void render();
+    void render(Texture &texture);
 
     bool initializeWindow(std::string_view name, int width = k_defaultWidth, int height = k_defaultHeight)
     {
