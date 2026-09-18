@@ -1,4 +1,5 @@
 #include "Texture.hpp"
+#include <algorithm>
 
 Texture::Texture(std::optional<SDL_Color> colorKey)
     : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{}
@@ -14,6 +15,8 @@ Texture::Texture(Texture &&other) noexcept
     : m_texture{other.m_texture},
       m_filePath{other.m_filePath},
       m_colorKey{other.m_colorKey},
+      m_currentClip{other.m_currentClip},
+      m_clips{other.m_clips},
       m_width{other.m_width},
       m_height{other.m_height}
 {
@@ -30,6 +33,8 @@ Texture &Texture::operator=(Texture &&other) noexcept
         m_texture = other.m_texture;
         m_filePath = other.m_filePath;
         m_colorKey = other.m_colorKey;
+        m_currentClip = other.m_currentClip;
+        m_clips = other.m_clips;
         m_width = other.m_width;
         m_height = other.m_height;
 
@@ -71,14 +76,25 @@ void Texture::render(SDL_Renderer *renderer, float xPos, float yPos)
 }
 
 void Texture::render(SDL_Renderer *renderer,
-                     const SDL_FRect &source,
                      const SDL_FRect &destination)
 {
-    SDL_RenderTexture(renderer, m_texture, &source, &destination);
+    const SDL_FRect *source{m_currentClip ? &(*m_currentClip) : nullptr};
+    SDL_RenderTexture(renderer, m_texture, source, &destination);
 }
 
 void Texture::destroy()
 {
     SDL_DestroyTexture(m_texture);
     m_texture = nullptr;
+}
+
+void Texture::repositionClip(Clip clip)
+{
+    m_currentClip = m_clips[static_cast<std::size_t>(clip)];
+}
+
+void Texture::populateClips(std::initializer_list<SDL_FRect> clips)
+{
+    std::copy(clips.begin(), clips.end(), m_clips.begin());
+    repositionClip(Clip::None);
 }
