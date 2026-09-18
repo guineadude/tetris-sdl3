@@ -86,21 +86,21 @@ void App::handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures>
         {
             switch (event->key.key)
             {
-                // case (SDLK_1):
-                //     textures[0].texture.repositionClip(Texture::Clip::First);
-                //     break;
-                // case (SDLK_2):
-                //     textures[0].texture.repositionClip(Texture::Clip::Second);
-                //     break;
-                // case (SDLK_3):
-                //     textures[0].texture.repositionClip(Texture::Clip::Third);
-                //     break;
-                // case (SDLK_4):
-                //     textures[0].texture.repositionClip(Texture::Clip::Fourth);
-                //     break;
-                // case (SDLK_0):
-                //     textures[0].texture.repositionClip(Texture::Clip::None);
-                //     break;
+            case (SDLK_1):
+                textures[0].texture.repositionClip(Texture::Clip::First);
+                break;
+            case (SDLK_2):
+                textures[0].texture.repositionClip(Texture::Clip::Second);
+                break;
+            case (SDLK_3):
+                textures[0].texture.repositionClip(Texture::Clip::Third);
+                break;
+            case (SDLK_4):
+                textures[0].texture.repositionClip(Texture::Clip::Fourth);
+                break;
+            case (SDLK_0):
+                textures[0].texture.repositionClip(Texture::Clip::Default);
+                break;
             }
         }
     }
@@ -112,13 +112,13 @@ void App::addTexturesToArray(std::array<TextureAsset, k_numTextures> &textures)
         Texture{SDL_Color{0x00, 0x00, 0xFF, 0xFF}},
         "assets\\button.png"};
 
-    // imgToRender.texture.populateClips({
-    //     SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight},       // None
-    //     SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight / 4},   // First
-    //     SDL_FRect{0, 200, App::k_defaultWidth, App::k_defaultHeight / 4}, // Second
-    //     SDL_FRect{0, 400, App::k_defaultWidth, App::k_defaultHeight / 4}, // Third
-    //     SDL_FRect{0, 600, App::k_defaultWidth, App::k_defaultHeight / 4}  // Fourth
-    // });
+    imgToRender.texture.populateClips({
+        SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight},       // Default
+        SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight / 4},   // First
+        SDL_FRect{0, 200, App::k_defaultWidth, App::k_defaultHeight / 4}, // Second
+        SDL_FRect{0, 400, App::k_defaultWidth, App::k_defaultHeight / 4}, // Third
+        SDL_FRect{0, 600, App::k_defaultWidth, App::k_defaultHeight / 4}  // Fourth
+    });
 
     textures[0] = std::move(imgToRender);
     // return true;

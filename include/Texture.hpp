@@ -4,6 +4,7 @@
 #include <optional>
 #include <string_view>
 #include <array>
+#include <initializer_list>
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 
@@ -14,6 +15,7 @@ public:
     enum class Clip : std::size_t
     {
         None,
+        Default,
         First,
         Second,
         Third,
@@ -25,30 +27,39 @@ private:
     SDL_Texture *m_texture{};
     std::string_view m_filePath{};
     std::optional<SDL_Color> m_colorKey{};
-    std::optional<SDL_FRect> m_currentClip{};
-    std::array<SDL_FRect, static_cast<std::size_t>(Clip::Max)> m_clips{};
+    Clip m_currentClip{Clip::None};
+    std::array<SDL_FRect, static_cast<std::size_t>(Clip::Max)> m_clipData{};
     int m_width{};
     int m_height{};
 
 public:
+    // constructor, destructor and move semantics
     Texture(std::optional<SDL_Color> colorKey = std::nullopt);
     ~Texture();
     Texture(Texture &&other) noexcept;
     Texture &operator=(Texture &&other) noexcept;
 
+    // non-copyable semantics (deleted copy constructor and copy assignment operator)
     Texture(const Texture &) = delete;
     Texture &operator=(const Texture &) = delete;
 
+    // destruction of the texture resource
     auto destroy() -> void;
-    auto getFilePath() const -> std::string_view;
-    auto setFilePath(std::string_view filePath) -> void;
-    auto getTexture() const -> SDL_Texture *;
+
+    // resource management
+    auto loadFromFile(std::string_view path, SDL_Renderer *renderer) -> bool;
+    auto render(SDL_Renderer *renderer, const SDL_FRect &destination = {0.F, 0.F, 0.F, 0.F}) -> void;
+
+    // clip management
+    auto repositionClip(Clip clip) -> void;
     auto populateClips(std::initializer_list<SDL_FRect> clips) -> void;
 
-    auto loadFromFile(std::string_view path, SDL_Renderer *renderer) -> bool;
-    auto render(SDL_Renderer *renderer, float xPos = 0.0F, float yPos = 0.0F) -> void;
-    auto render(SDL_Renderer *renderer, const SDL_FRect &destination) -> void;
-    auto repositionClip(Clip clip) -> void;
+    // getters
+    auto getFilePath() const -> std::string_view;
+    auto getTexture() const -> SDL_Texture *;
+
+    // setters
+    auto setFilePath(std::string_view filePath) -> void;
 };
 
 #endif // TEXTURE_HPP

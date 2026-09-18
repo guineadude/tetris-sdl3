@@ -16,7 +16,7 @@ Texture::Texture(Texture &&other) noexcept
       m_filePath{other.m_filePath},
       m_colorKey{other.m_colorKey},
       m_currentClip{other.m_currentClip},
-      m_clips{other.m_clips},
+      m_clipData{other.m_clipData},
       m_width{other.m_width},
       m_height{other.m_height}
 {
@@ -34,7 +34,7 @@ Texture &Texture::operator=(Texture &&other) noexcept
         m_filePath = other.m_filePath;
         m_colorKey = other.m_colorKey;
         m_currentClip = other.m_currentClip;
-        m_clips = other.m_clips;
+        m_clipData = other.m_clipData;
         m_width = other.m_width;
         m_height = other.m_height;
 
@@ -69,17 +69,10 @@ bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer)
     return m_texture != nullptr;
 }
 
-void Texture::render(SDL_Renderer *renderer, float xPos, float yPos)
+void Texture::render(SDL_Renderer *renderer, const SDL_FRect &destination)
 {
-    SDL_FRect destination{xPos, yPos, static_cast<float>(m_width), static_cast<float>(m_height)};
-    SDL_RenderTexture(renderer, m_texture, nullptr, &destination);
-}
-
-void Texture::render(SDL_Renderer *renderer,
-                     const SDL_FRect &destination)
-{
-    const SDL_FRect *source{m_currentClip ? &(*m_currentClip) : nullptr};
-    SDL_RenderTexture(renderer, m_texture, source, &destination);
+    const SDL_FRect *sourceRect{m_currentClip != Clip::None ? &m_clipData[static_cast<std::size_t>(m_currentClip)] : nullptr};
+    SDL_RenderTexture(renderer, m_texture, sourceRect, &destination);
 }
 
 void Texture::destroy()
@@ -90,11 +83,11 @@ void Texture::destroy()
 
 void Texture::repositionClip(Clip clip)
 {
-    m_currentClip = m_clips[static_cast<std::size_t>(clip)];
+    m_currentClip = clip;
 }
 
 void Texture::populateClips(std::initializer_list<SDL_FRect> clips)
 {
-    std::copy(clips.begin(), clips.end(), m_clips.begin());
-    repositionClip(Clip::None);
+    std::copy(clips.begin(), clips.end(), m_clipData.begin() + 1); // skip unused Clip::None slot
+    m_currentClip = Clip::None;
 }
