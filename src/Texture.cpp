@@ -1,5 +1,4 @@
 #include "Texture.hpp"
-#include <algorithm>
 
 Texture::Texture(std::optional<SDL_Color> colorKey)
     : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{}
