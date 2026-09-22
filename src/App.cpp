@@ -86,20 +86,19 @@ void App::handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures>
         {
             switch (event->key.key)
             {
-            case (SDLK_1):
-                textures[0].texture.repositionClip(Texture::Clip::First);
+            case (SDLK_LEFT):
+                textures[0].texture.rotateTexture(-90.0);
                 break;
-            case (SDLK_2):
-                textures[0].texture.repositionClip(Texture::Clip::Second);
+            case (SDLK_DOWN):
+                textures[0].texture.flipTexture(SDL_FLIP_VERTICAL);
                 break;
-            case (SDLK_3):
-                textures[0].texture.repositionClip(Texture::Clip::Third);
+            case (SDLK_RIGHT):
+                textures[0].texture.rotateTexture(90.0);
                 break;
-            case (SDLK_4):
-                textures[0].texture.repositionClip(Texture::Clip::Fourth);
+            case (SDLK_UP):
+                textures[0].texture.flipTexture(SDL_FLIP_HORIZONTAL);
                 break;
             case (SDLK_0):
-                textures[0].texture.repositionClip(Texture::Clip::Default);
                 break;
             }
         }
@@ -110,15 +109,15 @@ void App::addTexturesToArray(std::array<TextureAsset, k_numTextures> &textures)
 {
     TextureAsset imgToRender{
         Texture{SDL_Color{0x00, 0x00, 0xFF, 0xFF}},
-        "assets\\button.png"};
+        "assets\\kappn.png"};
 
-    imgToRender.texture.populateClips({
-        SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight},       // Default
-        SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight / 4},   // First
-        SDL_FRect{0, 200, App::k_defaultWidth, App::k_defaultHeight / 4}, // Second
-        SDL_FRect{0, 400, App::k_defaultWidth, App::k_defaultHeight / 4}, // Third
-        SDL_FRect{0, 600, App::k_defaultWidth, App::k_defaultHeight / 4}  // Fourth
-    });
+    // imgToRender.texture.populateClips({
+    //     SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight},       // Default
+    //     SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight / 4},   // First
+    //     SDL_FRect{0, 200, App::k_defaultWidth, App::k_defaultHeight / 4}, // Second
+    //     SDL_FRect{0, 400, App::k_defaultWidth, App::k_defaultHeight / 4}, // Third
+    //     SDL_FRect{0, 600, App::k_defaultWidth, App::k_defaultHeight / 4}  // Fourth
+    // });
 
     textures[0] = std::move(imgToRender);
     // return true;

@@ -16,8 +16,8 @@ public:
         std::string_view path;
     };
 
-    static constexpr int k_defaultWidth{300};
-    static constexpr int k_defaultHeight{800};
+    static constexpr int k_defaultWidth{1064};
+    static constexpr int k_defaultHeight{1641};
 
     App();
     ~App();

@@ -1,5 +1,7 @@
 #include "Texture.hpp"
 
+#include <cmath>
+
 Texture::Texture(std::optional<SDL_Color> colorKey)
     : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{}
 {
@@ -64,6 +66,7 @@ bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer)
     m_texture = SDL_CreateTextureFromSurface(renderer, surface);
     m_width = surface->w;
     m_height = surface->h;
+    textureCenter = SDL_FPoint{m_width / 2.0f, m_height / 2.0f};
     SDL_DestroySurface(surface);
     return m_texture != nullptr;
 }
@@ -71,7 +74,7 @@ bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer)
 void Texture::render(SDL_Renderer *renderer, const SDL_FRect &destination)
 {
     const SDL_FRect *sourceRect{m_currentClip != Clip::None ? &m_clipData[static_cast<std::size_t>(m_currentClip)] : nullptr};
-    SDL_RenderTexture(renderer, m_texture, sourceRect, &destination);
+    SDL_RenderTextureRotated(renderer, m_texture, sourceRect, &destination, m_rotationAngle, &textureCenter, m_flipMode);
 }
 
 void Texture::destroy()
@@ -80,13 +83,20 @@ void Texture::destroy()
     m_texture = nullptr;
 }
 
-void Texture::repositionClip(Clip clip)
-{
-    m_currentClip = clip;
-}
-
 void Texture::populateClips(std::initializer_list<SDL_FRect> clips)
 {
     std::copy(clips.begin(), clips.end(), m_clipData.begin() + 1); // skip unused Clip::None slot
     m_currentClip = Clip::None;
+}
+
+void Texture::rotateTexture(double angle)
+{
+    m_rotationAngle += angle;
+    m_rotationAngle = std::fmod(m_rotationAngle, 360.0);
+}
+
+void Texture::flipTexture(SDL_FlipMode flipMode)
+{
+    m_flipMode = static_cast<SDL_FlipMode>(
+        m_flipMode ^ SDL_FLIP_HORIZONTAL ^ SDL_FLIP_VERTICAL);
 }

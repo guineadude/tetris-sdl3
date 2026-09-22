@@ -32,6 +32,9 @@ private:
     std::array<SDL_FRect, static_cast<std::size_t>(Clip::Max)> m_clipData{};
     int m_width{};
     int m_height{};
+    double m_rotationAngle{};
+    SDL_FlipMode m_flipMode{};
+    SDL_FPoint textureCenter{0.F, 0.F};
 
 public:
     // constructor, destructor and move semantics
@@ -51,8 +54,12 @@ public:
     auto loadFromFile(std::string_view path, SDL_Renderer *renderer) -> bool;
     auto render(SDL_Renderer *renderer, const SDL_FRect &destination = {0.F, 0.F, 0.F, 0.F}) -> void;
 
+    // rotating, flipping
+    auto rotateTexture(double angle) -> void;
+    auto flipTexture(SDL_FlipMode flipMode) -> void;
+
     // clip management
-    auto repositionClip(Clip clip) -> void;
+    auto repositionClip(Clip clip) -> void { m_currentClip = clip; }
     auto populateClips(std::initializer_list<SDL_FRect> clips) -> void;
 
     // getters
