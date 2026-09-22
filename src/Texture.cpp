@@ -1,7 +1,9 @@
-#include "Texture.h"
+#include "Texture.hpp"
 
-Texture::Texture(SDL_Renderer &renderer)
-    : mTexture{}, mRenderer{renderer}, mWidth{}, mHeight{}
+#include <cmath>
+
+Texture::Texture(std::optional<SDL_Color> colorKey)
+    : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{}
 {
 }
 
@@ -10,123 +12,91 @@ Texture::~Texture()
     destroy();
 }
 
-auto Texture::destroy() -> void
+Texture::Texture(Texture &&other) noexcept
+    : m_texture{other.m_texture},
+      m_filePath{other.m_filePath},
+      m_colorKey{other.m_colorKey},
+      m_currentClip{other.m_currentClip},
+      m_clipData{other.m_clipData},
+      m_width{other.m_width},
+      m_height{other.m_height}
 {
-    // Clean up texture
-    SDL_DestroyTexture(mTexture);
-    mTexture = nullptr;
-    mWidth = 0;
-    mHeight = 0;
+    other.m_texture = nullptr;
+    other.m_width = 0;
+    other.m_height = 0;
 }
 
-auto Texture::loadFromFile(std::string_view path) -> bool
+Texture &Texture::operator=(Texture &&other) noexcept
 {
-
-    // Destroy any existing texture
-    destroy();
-
-    // Load surface
-    if (SDL_Surface *loadedSurface = IMG_Load(path.data()); !loadedSurface)
+    if (this != &other)
     {
-        SDL_Log("Unable to load image %.*s! SDL_image error: %s\n", static_cast<int>(path.size()), path.data(), SDL_GetError());
+        destroy();
+        m_texture = other.m_texture;
+        m_filePath = other.m_filePath;
+        m_colorKey = other.m_colorKey;
+        m_currentClip = other.m_currentClip;
+        m_clipData = other.m_clipData;
+        m_width = other.m_width;
+        m_height = other.m_height;
+
+        other.m_texture = nullptr;
+        other.m_width = 0;
+        other.m_height = 0;
+    }
+    return *this;
+}
+
+bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer)
+{
+    SDL_Surface *surface{IMG_Load(path.data())};
+    if (!surface)
+    {
+        SDL_Log("Failed to load texture from file: %s", SDL_GetError());
         return false;
     }
-    else
+
+    if (m_colorKey)
     {
-        if (!SDL_SetSurfaceColorKey(loadedSurface, true, SDL_MapSurfaceRGB(loadedSurface, 0x00, 0xFF, 0xFF)))
+        if (!SDL_SetSurfaceColorKey(surface, true, SDL_MapSurfaceRGB(surface, m_colorKey->r, m_colorKey->g, m_colorKey->b)))
         {
-            SDL_Log("Unable to set color key for image %.*s! SDL error: %s\n", static_cast<int>(path.size()), path.data(), SDL_GetError());
+            SDL_Log("Failed to set color key: %s", SDL_GetError());
         }
-        else
-        {
-            // Create texture from surface
-            if (mTexture = SDL_CreateTextureFromSurface(&mRenderer, loadedSurface); !mTexture)
-            {
-                SDL_Log("Unable to create texture from loaded pixels! SDL error: %s\n", SDL_GetError());
-            }
-            else
-            {
-                // Get image dimensions
-                mWidth = loadedSurface->w;
-                mHeight = loadedSurface->h;
-            }
-        }
-
-        // Clean up loaded surface
-        SDL_DestroySurface(loadedSurface);
     }
 
-    // Return success if texture loaded
-    return mTexture != nullptr;
+    m_texture = SDL_CreateTextureFromSurface(renderer, surface);
+    m_width = surface->w;
+    m_height = surface->h;
+    textureCenter = SDL_FPoint{m_width / 2.0f, m_height / 2.0f};
+    SDL_DestroySurface(surface);
+    return m_texture != nullptr;
 }
 
-auto Texture::render(float x, float y, SDL_FRect *clip, float width, float height, double degrees, SDL_FPoint *center, SDL_FlipMode flipMode) -> void
+void Texture::render(SDL_Renderer *renderer, const SDL_FRect &destination)
 {
-    // Set texture pos
-    SDL_FRect dstRect{x, y, static_cast<float>(mWidth), static_cast<float>(mHeight)};
-
-    if (clip)
-    {
-        dstRect.w = clip->w;
-        dstRect.h = clip->h;
-    }
-
-    // Resize if new dimensions are given
-    if (width > 0)
-    {
-        dstRect.w = width;
-    }
-    if (height > 0)
-    {
-        dstRect.h = height;
-    }
-
-    // Render texture
-    SDL_RenderTextureRotated(&mRenderer, mTexture, clip, &dstRect, degrees, center, flipMode);
+    const SDL_FRect *sourceRect{m_currentClip != Clip::None ? &m_clipData[static_cast<std::size_t>(m_currentClip)] : nullptr};
+    SDL_RenderTextureRotated(renderer, m_texture, sourceRect, &destination, m_rotationAngle, &textureCenter, m_flipMode);
 }
 
-auto Texture::setColor(Uint8 r, Uint8 g, Uint8 b) -> void
+void Texture::destroy()
 {
-    SDL_SetTextureColorMod(mTexture, r, g, b);
+    SDL_DestroyTexture(m_texture);
+    m_texture = nullptr;
 }
 
-auto Texture::setAlpha(Uint8 alpha) -> void
+void Texture::populateClips(std::initializer_list<SDL_FRect> clips)
 {
-    SDL_SetTextureAlphaMod(mTexture, alpha);
+    std::copy(clips.begin(), clips.end(), m_clipData.begin() + 1); // skip unused Clip::None slot
+    m_currentClip = Clip::None;
 }
 
-auto Texture::setBlending(SDL_BlendMode blendMode) -> void
+void Texture::rotateTexture(double angle)
 {
-    SDL_SetTextureBlendMode(mTexture, blendMode);
+    m_rotationAngle += angle;
+    m_rotationAngle = std::fmod(m_rotationAngle, 360.0);
 }
 
-#if defined(SDL_TTF_MAJOR_VERSION)
-auto Texture::loadFromRenderedText(std::string_view textureText, SDL_Color textColor, TTF_Font &font) -> bool
+void Texture::flipTexture(SDL_FlipMode flipMode)
 {
-    destroy();
-
-    if (SDL_Surface *textSurface = TTF_RenderText_Blended(&font, textureText.data(), 0, textColor); !textSurface)
-    {
-        SDL_Log("Unable to render text surface! SDL_ttf Error: %s\n", SDL_GetError());
-        SDL_DestroySurface(textSurface);
-        return false;
-    }
-    else
-    {
-        if (mTexture = SDL_CreateTextureFromSurface(&mRenderer, textSurface); !mTexture)
-        {
-            SDL_Log("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
-            SDL_DestroySurface(textSurface);
-            return false;
-        }
-        else
-        {
-            mWidth = textSurface->w;
-            mHeight = textSurface->h;
-        }
-        SDL_DestroySurface(textSurface);
-    }
-
-    return true;
+    m_flipMode = static_cast<SDL_FlipMode>(
+        m_flipMode ^ SDL_FLIP_HORIZONTAL ^ SDL_FLIP_VERTICAL);
 }
-#endif
