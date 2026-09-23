@@ -37,7 +37,7 @@ private:
     SDL_FPoint textureCenter{0.F, 0.F};
 
 public:
-    // constructor, destructor and move semantics
+    // constructor, destructor and move semantics.
     Texture(std::optional<SDL_Color> colorKey = std::nullopt);
     ~Texture();
     Texture(Texture &&other) noexcept;
