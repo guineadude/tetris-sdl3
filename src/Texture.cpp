@@ -97,6 +97,5 @@ void Texture::rotateTexture(double angle)
 
 void Texture::flipTexture(SDL_FlipMode flipMode)
 {
-    m_flipMode = static_cast<SDL_FlipMode>(
-        m_flipMode ^ SDL_FLIP_HORIZONTAL ^ SDL_FLIP_VERTICAL);
+    m_flipMode = static_cast<SDL_FlipMode>(m_flipMode ^ flipMode);
 }
