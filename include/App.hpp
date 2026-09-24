@@ -16,8 +16,8 @@ public:
         std::string_view path;
     };
 
-    static constexpr int k_defaultWidth{1064};
-    static constexpr int k_defaultHeight{1641};
+    static constexpr int k_defaultWidth{640};
+    static constexpr int k_defaultHeight{240};
 
     App();
     ~App();
@@ -36,10 +36,13 @@ private:
     SDL_Renderer *m_renderer{};
     std::array<TextureAsset, k_numTextures> m_textureArray{};
 
-    auto handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures> &textures, int &exitCode) const -> void;
-    auto render(std::array<TextureAsset, k_numTextures> &textures) const -> void;
-    auto addTexturesToArray(std::array<TextureAsset, k_numTextures> &textures) -> void;
-    auto initializeTextures(std::array<TextureAsset, k_numTextures> &textures) const -> bool;
+    // Aliases
+    typedef std::array<TextureAsset, k_numTextures> TextureArray;
+
+    auto handleEvents(SDL_Event *event, TextureArray &textures, int &exitCode) const -> void;
+    auto render(TextureArray &textures) const -> void;
+    auto addTexturesToArray(TextureArray &textures) -> void;
+    auto initializeTextures(TextureArray &textures) const -> bool;
     auto initializeWindow(std::string_view name, int width = k_defaultWidth, int height = k_defaultHeight) -> bool
     {
         if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window)

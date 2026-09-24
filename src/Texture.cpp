@@ -99,3 +99,18 @@ void Texture::flipTexture(SDL_FlipMode flipMode)
 {
     m_flipMode = static_cast<SDL_FlipMode>(m_flipMode ^ flipMode);
 }
+
+void Texture::setAlpha(uint8_t alpha)
+{
+    SDL_SetTextureAlphaMod(m_texture, alpha);
+}
+
+void Texture::setBlendMode(SDL_BlendMode blendMode)
+{
+    SDL_SetTextureBlendMode(m_texture, blendMode);
+}
+
+void Texture::setColorMod(uint8_t red, uint8_t green, uint8_t blue)
+{
+    SDL_SetTextureColorMod(m_texture, red, green, blue);
+}

@@ -54,6 +54,11 @@ public:
     auto loadFromFile(std::string_view path, SDL_Renderer *renderer) -> bool;
     auto render(SDL_Renderer *renderer, const SDL_FRect &destination = {0.F, 0.F, 0.F, 0.F}) -> void;
 
+    // rendering management
+    auto setAlpha(uint8_t alpha) -> void;
+    auto setBlendMode(SDL_BlendMode blendMode) -> void;
+    auto setColorMod(uint8_t red, uint8_t green, uint8_t blue) -> void;
+
     // rotating, flipping
     auto rotateTexture(double angle) -> void;
     auto flipTexture(SDL_FlipMode flipMode) -> void;
@@ -65,6 +70,7 @@ public:
     // getters
     auto getFilePath() const -> std::string_view;
     auto getTexture() const -> SDL_Texture *;
+    auto getAlpha() const -> uint8_t;
 
     // setters
     auto setFilePath(std::string_view filePath) -> void;

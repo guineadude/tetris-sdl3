@@ -87,18 +87,10 @@ void App::handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures>
             switch (event->key.key)
             {
             case (SDLK_LEFT):
-                textures[0].texture.rotateTexture(-90.0);
-                break;
-            case (SDLK_DOWN):
-                textures[0].texture.flipTexture(SDL_FLIP_VERTICAL);
+                textures[0].texture.setAlpha(128);
                 break;
             case (SDLK_RIGHT):
-                textures[0].texture.rotateTexture(90.0);
-                break;
-            case (SDLK_UP):
-                textures[0].texture.flipTexture(SDL_FLIP_HORIZONTAL);
-                break;
-            case (SDLK_0):
+                textures[0].texture.setColorMod(255, 0, 0);
                 break;
             }
         }
@@ -108,16 +100,8 @@ void App::handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures>
 void App::addTexturesToArray(std::array<TextureAsset, k_numTextures> &textures)
 {
     TextureAsset imgToRender{
-        Texture{SDL_Color{0x00, 0x00, 0xFF, 0xFF}},
-        "assets\\kappn.png"};
-
-    // imgToRender.texture.populateClips({
-    //     SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight},       // Default
-    //     SDL_FRect{0, 0, App::k_defaultWidth, App::k_defaultHeight / 4},   // First
-    //     SDL_FRect{0, 200, App::k_defaultWidth, App::k_defaultHeight / 4}, // Second
-    //     SDL_FRect{0, 400, App::k_defaultWidth, App::k_defaultHeight / 4}, // Third
-    //     SDL_FRect{0, 600, App::k_defaultWidth, App::k_defaultHeight / 4}  // Fourth
-    // });
+        Texture{SDL_Color{0x00, 0x00, 0x00, 0xFF}},
+        "assets\\colors.png"};
 
     textures[0] = std::move(imgToRender);
     // return true;
