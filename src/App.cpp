@@ -6,6 +6,11 @@ App::App()
 
 App::~App()
 {
+    if (m_font)
+    {
+        TTF_CloseFont(m_font);
+    }
+    TTF_Quit();
     SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     SDL_Quit();
@@ -18,16 +23,24 @@ bool App::init()
         SDL_Log("SDL_Init failed: %s", SDL_GetError());
         return false;
     }
-
+    if (!TTF_Init())
+    {
+        SDL_Log("TTF_Init failed: %s", SDL_GetError());
+        return false;
+    }
     if (!initializeWindow("Tetris"))
     {
         SDL_Log("Window initialization failed: %s", SDL_GetError());
         return false;
     }
-
     if (!initializeRenderer())
     {
         SDL_Log("Renderer initialization failed: %s", SDL_GetError());
+        return false;
+    }
+    if (!initializeFont())
+    {
+        SDL_Log("Font initialization failed: %s", SDL_GetError());
         return false;
     }
 
@@ -70,6 +83,8 @@ void App::render()
         static_cast<float>(k_defaultHeight)};
 
     m_textureArray[0].texture.render(m_renderer, k_destRect);
+
+    m_textTexture.render(m_renderer, k_destRect);
 
     SDL_RenderPresent(m_renderer);
 }
@@ -118,5 +133,12 @@ bool App::initializeTextures()
             return false;
         }
     }
+
+    if (!m_textTexture.loadFromRenderedText("Score: 100", k_defaultFontColor, m_font, m_renderer))
+    {
+        SDL_Log("Failed to create text texture");
+        return false;
+    }
+
     return true;
 }

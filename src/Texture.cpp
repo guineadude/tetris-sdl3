@@ -1,6 +1,6 @@
 #include "Texture.hpp"
 
-#include <cmath>
+#include <string>
 
 Texture::Texture(std::optional<SDL_Color> colorKey)
     : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{}
@@ -48,6 +48,8 @@ Texture &Texture::operator=(Texture &&other) noexcept
 
 bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer)
 {
+    destroy();
+
     SDL_Surface *surface{IMG_Load(path.data())};
     if (!surface)
     {
@@ -69,6 +71,38 @@ bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer)
     textureCenter = SDL_FPoint{m_width / 2.0f, m_height / 2.0f};
     SDL_DestroySurface(surface);
     return m_texture != nullptr;
+}
+
+bool Texture::loadFromRenderedText(std::string_view text, SDL_Color color, TTF_Font *font, SDL_Renderer *renderer)
+{
+    destroy();
+
+    const std::string textString{text};
+    SDL_Surface *textSurface{
+        TTF_RenderText_Blended(font, textString.c_str(), 0, color)};
+
+    if (!textSurface)
+    {
+        SDL_Log("Unable to render text: %s", SDL_GetError());
+        return false;
+    }
+
+    m_texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+
+    if (!m_texture)
+    {
+        SDL_Log("Unable to create texture from rendered text: %s", SDL_GetError());
+        SDL_DestroySurface(textSurface);
+        return false;
+    }
+
+    m_width = textSurface->w;
+    m_height = textSurface->h;
+    textureCenter = SDL_FPoint{m_width / 2.0f, m_height / 2.0f};
+
+    SDL_DestroySurface(textSurface);
+
+    return true;
 }
 
 void Texture::render(SDL_Renderer *renderer, const SDL_FRect &destination)

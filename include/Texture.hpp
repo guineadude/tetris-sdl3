@@ -7,6 +7,8 @@
 #include <initializer_list>
 #include <algorithm>
 #include <cstddef>
+#include <cmath>
+#include <string>
 
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
@@ -55,6 +57,7 @@ public:
 
     // resource management
     auto loadFromFile(std::string_view path, SDL_Renderer *renderer) -> bool;
+
     auto render(SDL_Renderer *renderer, const SDL_FRect &destination = {0.F, 0.F, 0.F, 0.F}) -> void;
 
     // rendering management
@@ -72,7 +75,11 @@ public:
 
     // fonts
 #if defined(SDL_TTF_MAJOR_VERSION)
-    auto loadFromRenderedText(std::string_view text, SDL_Color color, TTF_Font *font, SDL_Renderer *renderer) -> bool;
+    auto loadFromRenderedText(
+        std::string_view text,
+        SDL_Color color,
+        TTF_Font *font,
+        SDL_Renderer *renderer) -> bool;
 #endif
 
     // getters
