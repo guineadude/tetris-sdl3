@@ -6,8 +6,11 @@
 #include <array>
 #include <initializer_list>
 #include <algorithm>
+#include <cstddef>
+
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 class Texture
 {
@@ -66,6 +69,11 @@ public:
     // clip management
     auto repositionClip(Clip clip) -> void { m_currentClip = clip; }
     auto populateClips(std::initializer_list<SDL_FRect> clips) -> void;
+
+    // fonts
+#if defined(SDL_TTF_MAJOR_VERSION)
+    auto loadFromRenderedText(std::string_view text, SDL_Color color, TTF_Font *font, SDL_Renderer *renderer) -> bool;
+#endif
 
     // getters
     auto getFilePath() const -> std::string_view;

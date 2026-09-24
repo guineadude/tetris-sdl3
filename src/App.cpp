@@ -41,9 +41,9 @@ int App::run()
     SDL_Event event;
     SDL_zero(event);
 
-    addTexturesToArray(m_textureArray);
+    addTexturesToArray();
 
-    if (!initializeTextures(m_textureArray))
+    if (!initializeTextures())
     {
         SDL_Log("Failed to initialize textures: %s", SDL_GetError());
         return 2;
@@ -51,14 +51,14 @@ int App::run()
 
     while (exitCode == 0)
     {
-        handleEvents(&event, m_textureArray, exitCode);
-        render(m_textureArray);
+        handleEvents(&event, exitCode);
+        render();
     }
 
     return exitCode;
 }
 
-void App::render(std::array<TextureAsset, k_numTextures> &textures) const
+void App::render()
 {
     SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(m_renderer);
@@ -69,12 +69,12 @@ void App::render(std::array<TextureAsset, k_numTextures> &textures) const
         static_cast<float>(k_defaultWidth),
         static_cast<float>(k_defaultHeight)};
 
-    textures[0].texture.render(m_renderer, k_destRect);
+    m_textureArray[0].texture.render(m_renderer, k_destRect);
 
     SDL_RenderPresent(m_renderer);
 }
 
-void App::handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures> &textures, int &exitCode) const
+void App::handleEvents(SDL_Event *event, int &exitCode)
 {
     while (SDL_PollEvent(event) == true && exitCode == 0)
     {
@@ -87,30 +87,30 @@ void App::handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures>
             switch (event->key.key)
             {
             case (SDLK_LEFT):
-                textures[0].texture.setAlpha(128);
-                textures[0].texture.setBlendMode(SDL_BLENDMODE_BLEND);
+                m_textureArray[0].texture.setAlpha(128);
+                m_textureArray[0].texture.setBlendMode(SDL_BLENDMODE_BLEND);
                 break;
             case (SDLK_RIGHT):
-                textures[0].texture.setColorMod(255, 0, 0);
+                m_textureArray[0].texture.setColorMod(255, 0, 0);
                 break;
             }
         }
     }
 }
 
-void App::addTexturesToArray(std::array<TextureAsset, k_numTextures> &textures)
+void App::addTexturesToArray()
 {
     TextureAsset imgToRender{
         Texture{SDL_Color{0x00, 0x00, 0x00, 0xFF}},
         "assets\\colors.png"};
 
-    textures[0] = std::move(imgToRender);
+    m_textureArray[0] = std::move(imgToRender);
     // return true;
 }
 
-bool App::initializeTextures(std::array<TextureAsset, k_numTextures> &textures) const
+bool App::initializeTextures()
 {
-    for (auto &textureAsset : textures)
+    for (auto &textureAsset : m_textureArray)
     {
         if (!textureAsset.texture.loadFromFile(textureAsset.path.data(), m_renderer))
         {

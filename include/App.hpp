@@ -37,12 +37,12 @@ private:
     std::array<TextureAsset, k_numTextures> m_textureArray{};
 
     // Aliases
-    typedef std::array<TextureAsset, k_numTextures> TextureArray;
+    using TextureArray = std::array<TextureAsset, k_numTextures>;
 
-    auto handleEvents(SDL_Event *event, TextureArray &textures, int &exitCode) const -> void;
-    auto render(TextureArray &textures) const -> void;
-    auto addTexturesToArray(TextureArray &textures) -> void;
-    auto initializeTextures(TextureArray &textures) const -> bool;
+    auto handleEvents(SDL_Event *event, int &exitCode) -> void;
+    auto render() -> void;
+    auto addTexturesToArray() -> void;
+    auto initializeTextures() -> bool;
     auto initializeWindow(std::string_view name, int width = k_defaultWidth, int height = k_defaultHeight) -> bool
     {
         if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window)
