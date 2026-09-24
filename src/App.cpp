@@ -88,6 +88,7 @@ void App::handleEvents(SDL_Event *event, std::array<TextureAsset, k_numTextures>
             {
             case (SDLK_LEFT):
                 textures[0].texture.setAlpha(128);
+                textures[0].texture.setBlendMode(SDL_BLENDMODE_BLEND);
                 break;
             case (SDLK_RIGHT):
                 textures[0].texture.setColorMod(255, 0, 0);
