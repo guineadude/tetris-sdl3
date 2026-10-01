@@ -1,153 +1,165 @@
 #include "App.hpp"
 
-App::App()
-{
+App::App() {}
+
+App::~App() {
+  if (m_font) {
+    TTF_CloseFont(m_font);
+  }
+  TTF_Quit();
+  SDL_DestroyRenderer(m_renderer);
+  SDL_DestroyWindow(m_window);
+  SDL_Quit();
 }
 
-App::~App()
-{
-    if (m_font)
-    {
-        TTF_CloseFont(m_font);
-    }
-    TTF_Quit();
-    SDL_DestroyRenderer(m_renderer);
-    SDL_DestroyWindow(m_window);
-    SDL_Quit();
+bool App::init() {
+  if (!SDL_Init(SDL_INIT_VIDEO)) {
+    SDL_Log("SDL_Init failed: %s", SDL_GetError());
+    return false;
+  }
+  if (!TTF_Init()) {
+    SDL_Log("TTF_Init failed: %s", SDL_GetError());
+    return false;
+  }
+  if (!initializeWindow("Tetris")) {
+    SDL_Log("Window initialization failed: %s", SDL_GetError());
+    return false;
+  }
+  if (!initializeRenderer()) {
+    SDL_Log("Renderer initialization failed: %s", SDL_GetError());
+    return false;
+  }
+  if (!initializeFont()) {
+    SDL_Log("Font initialization failed: %s", SDL_GetError());
+    return false;
+  }
+
+  return true;
 }
 
-bool App::init()
-{
-    if (!SDL_Init(SDL_INIT_VIDEO))
-    {
-        SDL_Log("SDL_Init failed: %s", SDL_GetError());
-        return false;
-    }
-    if (!TTF_Init())
-    {
-        SDL_Log("TTF_Init failed: %s", SDL_GetError());
-        return false;
-    }
-    if (!initializeWindow("Tetris"))
-    {
-        SDL_Log("Window initialization failed: %s", SDL_GetError());
-        return false;
-    }
-    if (!initializeRenderer())
-    {
-        SDL_Log("Renderer initialization failed: %s", SDL_GetError());
-        return false;
-    }
-    if (!initializeFont())
-    {
-        SDL_Log("Font initialization failed: %s", SDL_GetError());
-        return false;
-    }
+int App::run() {
+  int exitCode{};
 
-    return true;
+  SDL_Event event;
+  SDL_zero(event);
+
+  addTexturesToArray();
+
+  if (!initializeTextures()) {
+    SDL_Log("Failed to initialize textures: %s", SDL_GetError());
+    return 2;
+  }
+
+  while (exitCode == 0) {
+    handleEvents(&event, exitCode);
+    render();
+  }
+
+  return exitCode;
 }
 
-int App::run()
-{
-    int exitCode{};
+void App::render() {
+  SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+  SDL_RenderClear(m_renderer);
 
-    SDL_Event event;
-    SDL_zero(event);
+  auto &texture{m_textureArray[0].texture};
+  texture.repositionClip(Texture::Clip::First);
+  texture.render(m_renderer, m_button1.getBounds());
+  texture.repositionClip(Texture::Clip::Second);
+  texture.render(m_renderer, m_button2.getBounds());
+  texture.repositionClip(Texture::Clip::Third);
+  texture.render(m_renderer, m_button3.getBounds());
+  texture.repositionClip(Texture::Clip::Fourth);
+  texture.render(m_renderer, m_button4.getBounds());
 
-    addTexturesToArray();
+  // m_textTexture.render(m_renderer, k_destRect);
 
-    if (!initializeTextures())
-    {
-        SDL_Log("Failed to initialize textures: %s", SDL_GetError());
-        return 2;
-    }
-
-    while (exitCode == 0)
-    {
-        handleEvents(&event, exitCode);
-        render();
-    }
-
-    return exitCode;
+  SDL_RenderPresent(m_renderer);
 }
 
-void App::render()
-{
-    SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderClear(m_renderer);
-
-    auto &button{m_textureArray[0].texture};
-    constexpr float kClipSize{static_cast<float>(k_defaultWidth) * .5f};
-    button.repositionClip(Texture::Clip::First);
-    button.render(m_renderer, SDL_FRect{0.0f, 0.0f, kClipSize, kClipSize});
-    button.repositionClip(Texture::Clip::Second);
-    button.render(m_renderer, SDL_FRect{kClipSize, 0.0f, kClipSize, kClipSize});
-    button.repositionClip(Texture::Clip::Third);
-    button.render(m_renderer, SDL_FRect{0.0f, kClipSize, kClipSize, kClipSize});
-    button.repositionClip(Texture::Clip::Fourth);
-    button.render(m_renderer, SDL_FRect{kClipSize, kClipSize, kClipSize, kClipSize});
-
-    // m_textTexture.render(m_renderer, k_destRect);
-
-    SDL_RenderPresent(m_renderer);
-}
-
-void App::handleEvents(SDL_Event *event, int &exitCode)
-{
-    while (SDL_PollEvent(event) == true && exitCode == 0)
-    {
-        if (event->type == SDL_EVENT_QUIT)
-        {
-            exitCode = -1;
-        }
-        if (event->type == SDL_EVENT_KEY_DOWN)
-        {
-            switch (event->key.key)
-            {
-            case (SDLK_LEFT):
-                m_textureArray[0].texture.setAlpha(128);
-                m_textureArray[0].texture.setBlendMode(SDL_BLENDMODE_BLEND);
-                break;
-            case (SDLK_RIGHT):
-                m_textureArray[0].texture.setColorMod(255, 0, 0);
-                break;
-            }
-        }
+void App::handleEvents(SDL_Event *event, int &exitCode) {
+  while (SDL_PollEvent(event) == true && exitCode == 0) {
+    if (event->type == SDL_EVENT_QUIT) {
+      exitCode = -1;
     }
-}
-
-void App::addTexturesToArray()
-{
-    TextureAsset imgToRender{
-        Texture{},
-        "assets\\button.png"};
-
-    constexpr float kButtonWidth{300.0f};
-    constexpr float kButtonHeight{200.0f};
-
-    imgToRender.texture.populateClips({SDL_FRect{0.0f, 0.0f, kButtonWidth, kButtonHeight},
-                                       SDL_FRect{0.0f, kButtonHeight, kButtonWidth, kButtonHeight},
-                                       SDL_FRect{0.0f, kButtonHeight * 2.0f, kButtonWidth, kButtonHeight},
-                                       SDL_FRect{0.0f, kButtonHeight * 3.0f, kButtonWidth, kButtonHeight}});
-
-    m_textureArray[0] = std::move(imgToRender);
-}
-bool App::initializeTextures()
-{
-    for (auto &textureAsset : m_textureArray)
-    {
-        if (!textureAsset.texture.loadFromFile(textureAsset.path.data(), m_renderer))
-        {
-            SDL_Log("Failed to load image: %s", SDL_GetError());
-            return false;
-        }
+    if (event->type == SDL_EVENT_KEY_DOWN) {
+      switch (event->key.key) {}
     }
+    if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+      if (auto buttonName = checkButtonBounds()) {
+        SDL_Log("Mouse is over %s", buttonName->data());
+      }
+    }
+    if (event->type == SDL_EVENT_MOUSE_BUTTON_UP) {
+      if (auto buttonName = checkButtonBounds()) {
+        SDL_Log("Mouse released over %s", buttonName->data());
+      }
+    }
+    if (event->type == SDL_EVENT_MOUSE_MOTION) {
+      float x = -1.f, y = -1.f;
+      SDL_GetMouseState(&x, &y);
+      SDL_Log("Mouse motion at (%f, %f)", x, y);
+    }
+  }
+}
 
-    // if (!m_textTexture.loadFromRenderedText("Score: 100", k_defaultFontColor, m_font, m_renderer))
-    // {
-    //     SDL_Log("Failed to create text texture");
-    //     return false;
-    // }
+void App::addTexturesToArray() {
+  TextureAsset imgToRender{Texture{}, "assets\\button.png"};
 
-    return true;
+  const float kButtonWidth{300.0f};
+  const float kButtonHeight{200.0f};
+
+  imgToRender.texture.populateClips(
+      {SDL_FRect{0.0f, 0.0f, kButtonWidth, kButtonHeight},
+       SDL_FRect{0.0f, kButtonHeight, kButtonWidth, kButtonHeight},
+       SDL_FRect{0.0f, kButtonHeight * 2.0f, kButtonWidth, kButtonHeight},
+       SDL_FRect{0.0f, kButtonHeight * 3.0f, kButtonWidth, kButtonHeight}});
+
+  constexpr float kClipSize{static_cast<float>(k_defaultWidth) * .5f};
+  m_button1 = Button{0.0f, 0.0f, kClipSize, kClipSize};
+  m_button2 = Button{kClipSize, 0.0f, kClipSize, kClipSize};
+  m_button3 = Button{0.0f, kClipSize, kClipSize, kClipSize};
+  m_button4 = Button{kClipSize, kClipSize, kClipSize, kClipSize};
+
+  m_textureArray[0] = std::move(imgToRender);
+}
+
+bool App::initializeTextures() {
+  for (auto &textureAsset : m_textureArray) {
+    if (!textureAsset.texture.loadFromFile(textureAsset.path.data(),
+                                           m_renderer)) {
+      SDL_Log("Failed to load image: %s", SDL_GetError());
+      return false;
+    }
+  }
+
+  // if (!m_textTexture.loadFromRenderedText("Score: 100", k_defaultFontColor,
+  // m_font, m_renderer))
+  // {
+  //     SDL_Log("Failed to create text texture");
+  //     return false;
+  // }
+
+  return true;
+}
+
+auto App::checkButtonBounds() -> std::optional<std::string_view> {
+  float x = -1.f, y = -1.f;
+  SDL_GetMouseState(&x, &y);
+  const SDL_FPoint mousePos{x, y};
+
+  if (m_button1.containsPoint(mousePos)) {
+    return "button1";
+  }
+  if (m_button2.containsPoint(mousePos)) {
+    return "button2";
+  }
+  if (m_button3.containsPoint(mousePos)) {
+    return "button3";
+  }
+  if (m_button4.containsPoint(mousePos)) {
+    return "button4";
+  }
+
+  return std::nullopt;
 }
