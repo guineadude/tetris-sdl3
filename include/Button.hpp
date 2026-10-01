@@ -37,6 +37,7 @@ public:
   auto onRelease() -> void;
 
   auto getState() const -> State;
+
   auto setState(State state) -> void;
   auto setColorMod() -> void;
 };

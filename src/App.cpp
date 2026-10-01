@@ -62,13 +62,11 @@ void App::render() {
   SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(m_renderer);
 
-  auto &texture{m_textureArray[0].texture};
-  const auto destRect{SDL_FRect{
-      (k_defaultWidth - m_textTexture.getWidth()) * 0.5f,
-      (k_defaultHeight - m_textTexture.getHeight()) * 0.5f,
-      static_cast<float>(m_textTexture.getWidth()),
-      static_cast<float>(m_textTexture.getHeight())}};
-  m_textTexture.render(m_renderer, destRect);
+  const auto destRect{
+      SDL_FRect{(k_defaultWidth - m_textTexture.getWidth()) * 0.5f,
+                (k_defaultHeight - m_textTexture.getHeight()) * 0.5f,
+                static_cast<float>(m_textTexture.getWidth()),
+                static_cast<float>(m_textTexture.getHeight())}};
 
   SDL_RenderPresent(m_renderer);
 }
@@ -79,7 +77,13 @@ void App::handleEvents(SDL_Event *event, int &exitCode) {
       exitCode = -1;
     }
     if (event->type == SDL_EVENT_KEY_DOWN) {
-      switch (event->key.key) {}
+      switch (event->key.key) {
+      case (SDLK_ESCAPE):
+        exitCode = -1;
+        break;
+      case (SDLK_RETURN):
+        break;
+      }
     }
     if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
       if (auto *button = checkButtonBounds()) {
@@ -114,8 +118,8 @@ bool App::initializeTextures() {
     }
   }
 
-  if (!m_textTexture.loadFromRenderedText("Text Timing", k_defaultFontColor,
-                                          m_font, m_renderer)) {
+  if (!m_textTexture.loadFromRenderedText(m_text, k_defaultFontColor, m_font,
+                                          m_renderer)) {
     SDL_Log("Failed to create text texture: %s", SDL_GetError());
     return false;
   }

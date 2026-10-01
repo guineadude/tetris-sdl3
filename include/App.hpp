@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_stdinc.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "Button.hpp"
@@ -44,6 +45,7 @@ private:
   std::array<TextureAsset, k_numTextures> m_textureArray{};
   TTF_Font *m_font{};
   Texture m_textTexture{};
+  std::string m_text{"SampleTXT"};
 
   Button m_button1{};
   Button m_button2{};
