@@ -33,10 +33,38 @@ private:
 
 public:
   // constructor, destructor and move semantics.
-  Texture(std::optional<SDL_Color> colorKey = std::nullopt);
-  ~Texture();
-  Texture(Texture &&other) noexcept;
-  Texture &operator=(Texture &&other) noexcept;
+  Texture(std::optional<SDL_Color> colorKey = std::nullopt)
+      : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{} {}
+
+  ~Texture() { destroy(); }
+
+  Texture(Texture &&other) noexcept
+      : m_texture{other.m_texture}, m_filePath{other.m_filePath},
+        m_colorKey{other.m_colorKey}, m_currentClip{other.m_currentClip},
+        m_clipData{other.m_clipData}, m_width{other.m_width},
+        m_height{other.m_height} {
+    other.m_texture = nullptr;
+    other.m_width = 0;
+    other.m_height = 0;
+  }
+
+  Texture &operator=(Texture &&other) noexcept {
+    if (this != &other) {
+      destroy();
+      m_texture = other.m_texture;
+      m_filePath = other.m_filePath;
+      m_colorKey = other.m_colorKey;
+      m_currentClip = other.m_currentClip;
+      m_clipData = other.m_clipData;
+      m_width = other.m_width;
+      m_height = other.m_height;
+
+      other.m_texture = nullptr;
+      other.m_width = 0;
+      other.m_height = 0;
+    }
+    return *this;
+  }
 
   // non-copyable semantics (deleted copy constructor and copy assignment
   // operator)
@@ -73,10 +101,10 @@ public:
 
   // getters
   auto getFilePath() const -> std::string_view;
-  auto getTexture() const -> SDL_Texture *;
+  auto getTexture() const -> SDL_Texture * { return m_texture; }
   auto getAlpha() const -> uint8_t;
-  auto getWidth() const -> int;
-  auto getHeight() const -> int;
+  auto getWidth() const -> int { return m_width; }
+  auto getHeight() const -> int { return m_height; }
 
   // setters
   auto setFilePath(std::string_view filePath) -> void;

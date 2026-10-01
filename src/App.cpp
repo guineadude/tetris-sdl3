@@ -43,10 +43,9 @@ int App::run() {
   SDL_Event event;
   SDL_zero(event);
 
-  addTexturesToArray();
-
-  if (!initializeTextures()) {
-    SDL_Log("Failed to initialize textures: %s", SDL_GetError());
+  if (!m_scene.loadAssets(m_renderer, m_font, k_defaultWidth,
+                          k_defaultHeight)) {
+    SDL_Log("Failed to load scene assets: %s", SDL_GetError());
     return 2;
   }
 
@@ -62,11 +61,7 @@ void App::render() {
   SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(m_renderer);
 
-  const auto destRect{
-      SDL_FRect{(k_defaultWidth - m_textTexture.getWidth()) * 0.5f,
-                (k_defaultHeight - m_textTexture.getHeight()) * 0.5f,
-                static_cast<float>(m_textTexture.getWidth()),
-                static_cast<float>(m_textTexture.getHeight())}};
+  m_scene.render(m_renderer);
 
   SDL_RenderPresent(m_renderer);
 }
@@ -78,72 +73,12 @@ void App::handleEvents(SDL_Event *event, int &exitCode) {
     }
     if (event->type == SDL_EVENT_KEY_DOWN) {
       switch (event->key.key) {
-      case (SDLK_ESCAPE):
+      case SDLK_ESCAPE:
         exitCode = -1;
         break;
-      case (SDLK_RETURN):
-        break;
       }
     }
-    if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-      if (auto *button = checkButtonBounds()) {
-        button->onClick();
-      }
-    }
-    if (event->type == SDL_EVENT_MOUSE_BUTTON_UP) {
-      if (auto *button = checkButtonBounds()) {
-        button->onRelease();
-      }
-    }
-    if (event->type == SDL_EVENT_MOUSE_MOTION) {
-      if (auto *button = checkButtonBounds()) {
-        button->onHover();
-      }
-    }
+
+    m_scene.handleEvent(*event, exitCode);
   }
-}
-
-void App::addTexturesToArray() {
-  TextureAsset imgToRender{Texture{}, "assets\\kappn.png"};
-
-  m_textureArray[0] = std::move(imgToRender);
-}
-
-bool App::initializeTextures() {
-  for (auto &textureAsset : m_textureArray) {
-    if (!textureAsset.texture.loadFromFile(textureAsset.path.data(),
-                                           m_renderer)) {
-      SDL_Log("Failed to load image: %s", SDL_GetError());
-      return false;
-    }
-  }
-
-  if (!m_textTexture.loadFromRenderedText(m_text, k_defaultFontColor, m_font,
-                                          m_renderer)) {
-    SDL_Log("Failed to create text texture: %s", SDL_GetError());
-    return false;
-  }
-
-  return true;
-}
-
-auto App::checkButtonBounds() -> Button * {
-  float x = -1.f, y = -1.f;
-  SDL_GetMouseState(&x, &y);
-  const SDL_FPoint mousePos{x, y};
-
-  if (m_button1.containsPoint(mousePos)) {
-    return &m_button1;
-  }
-  if (m_button2.containsPoint(mousePos)) {
-    return &m_button2;
-  }
-  if (m_button3.containsPoint(mousePos)) {
-    return &m_button3;
-  }
-  if (m_button4.containsPoint(mousePos)) {
-    return &m_button4;
-  }
-
-  return nullptr;
 }

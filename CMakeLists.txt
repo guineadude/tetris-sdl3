@@ -23,8 +23,9 @@ endif()
 add_executable(tetris
     src/main.cpp
     src/App.cpp
-    src/texture.cpp
+    src/Texture.cpp
     src/Button.cpp
+    src/DemoScene.cpp
 )
 
 target_include_directories(tetris PRIVATE

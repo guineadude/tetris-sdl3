@@ -1,32 +1,21 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include <array>
-#include <optional>
 #include <string_view>
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_stdinc.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-#include "Button.hpp"
-#include "Texture.hpp"
+#include "DemoScene.hpp"
 
 class App {
 public:
-  struct TextureAsset {
-    Texture texture;
-    std::string_view path;
-  };
-
   static constexpr int k_defaultWidth{500};
   static constexpr int k_defaultHeight{500};
-  static constexpr std::size_t k_numTextures{1};
 
   // font
   static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};
   static constexpr int k_fontSize{50};
-  static constexpr SDL_Color k_defaultFontColor{0x00, 0x00, 0x00, 0xFF};
 
   App();
   ~App();
@@ -42,23 +31,11 @@ public:
 private:
   SDL_Window *m_window{};
   SDL_Renderer *m_renderer{};
-  std::array<TextureAsset, k_numTextures> m_textureArray{};
   TTF_Font *m_font{};
-  Texture m_textTexture{};
-  std::string m_text{"SampleTXT"};
-
-  Button m_button1{};
-  Button m_button2{};
-  Button m_button3{};
-  Button m_button4{};
-
-  // Aliases
-  using TextureArray = std::array<TextureAsset, k_numTextures>;
+  DemoScene m_scene{};
 
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
   auto render() -> void;
-  auto addTexturesToArray() -> void;
-  auto initializeTextures() -> bool;
   auto initializeWindow(std::string_view name, int width = k_defaultWidth,
                         int height = k_defaultHeight) -> bool {
     if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window) {
@@ -82,12 +59,6 @@ private:
     }
     return true;
   }
-
-  auto getWindow() const -> SDL_Window * { return m_window; }
-  auto getRenderer() const -> SDL_Renderer * { return m_renderer; }
-
-  // mouse
-  auto checkButtonBounds() -> Button *;
 };
 
 #endif // APP_HPP
