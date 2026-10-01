@@ -63,8 +63,12 @@ void App::render() {
   SDL_RenderClear(m_renderer);
 
   auto &texture{m_textureArray[0].texture};
-  const auto destRect{SDL_FRect{0.0f, 0.0f, 500.0f, 500.0f}};
-  texture.render(m_renderer, destRect);
+  const auto destRect{SDL_FRect{
+      (k_defaultWidth - m_textTexture.getWidth()) * 0.5f,
+      (k_defaultHeight - m_textTexture.getHeight()) * 0.5f,
+      static_cast<float>(m_textTexture.getWidth()),
+      static_cast<float>(m_textTexture.getHeight())}};
+  m_textTexture.render(m_renderer, destRect);
 
   SDL_RenderPresent(m_renderer);
 }
@@ -98,21 +102,6 @@ void App::handleEvents(SDL_Event *event, int &exitCode) {
 void App::addTexturesToArray() {
   TextureAsset imgToRender{Texture{}, "assets\\kappn.png"};
 
-  // const float kButtonWidth{300.0f};
-  // const float kButtonHeight{200.0f};
-
-  // imgToRender.texture.populateClips(
-  //     {SDL_FRect{0.0f, 0.0f, kButtonWidth, kButtonHeight},
-  //      SDL_FRect{0.0f, kButtonHeight, kButtonWidth, kButtonHeight},
-  //      SDL_FRect{0.0f, kButtonHeight * 2.0f, kButtonWidth, kButtonHeight},
-  //      SDL_FRect{0.0f, kButtonHeight * 3.0f, kButtonWidth, kButtonHeight}});
-
-  // constexpr float kClipSize{static_cast<float>(k_defaultWidth) * .5f};
-  // m_button1 = Button{0.0f, 0.0f, kClipSize, kClipSize};
-  // m_button2 = Button{kClipSize, 0.0f, kClipSize, kClipSize};
-  // m_button3 = Button{0.0f, kClipSize, kClipSize, kClipSize};
-  // m_button4 = Button{kClipSize, kClipSize, kClipSize, kClipSize};
-
   m_textureArray[0] = std::move(imgToRender);
 }
 
@@ -125,18 +114,11 @@ bool App::initializeTextures() {
     }
   }
 
-  // SDL_Texture *buttonTexture{m_textureArray[0].texture.getTexture()};
-  // m_button1.setTexture(buttonTexture);
-  // m_button2.setTexture(buttonTexture);
-  // m_button3.setTexture(buttonTexture);
-  // m_button4.setTexture(buttonTexture);
-
-  // if (!m_textTexture.loadFromRenderedText("Score: 100", k_defaultFontColor,
-  // m_font, m_renderer))
-  // {
-  //     SDL_Log("Failed to create text texture");
-  //     return false;
-  // }
+  if (!m_textTexture.loadFromRenderedText("Text Timing", k_defaultFontColor,
+                                          m_font, m_renderer)) {
+    SDL_Log("Failed to create text texture: %s", SDL_GetError());
+    return false;
+  }
 
   return true;
 }

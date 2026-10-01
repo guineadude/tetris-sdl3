@@ -75,6 +75,8 @@ public:
   auto getFilePath() const -> std::string_view;
   auto getTexture() const -> SDL_Texture *;
   auto getAlpha() const -> uint8_t;
+  auto getWidth() const -> int;
+  auto getHeight() const -> int;
 
   // setters
   auto setFilePath(std::string_view filePath) -> void;

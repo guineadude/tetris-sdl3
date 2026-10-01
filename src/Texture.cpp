@@ -9,6 +9,9 @@ Texture::~Texture() { destroy(); }
 
 auto Texture::getTexture() const -> SDL_Texture * { return m_texture; }
 
+auto Texture::getWidth() const -> int { return m_width; }
+auto Texture::getHeight() const -> int { return m_height; }
+
 Texture::Texture(Texture &&other) noexcept
     : m_texture{other.m_texture}, m_filePath{other.m_filePath},
       m_colorKey{other.m_colorKey}, m_currentClip{other.m_currentClip},
