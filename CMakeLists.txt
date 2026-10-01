@@ -24,6 +24,7 @@ add_executable(tetris
     src/main.cpp
     src/App.cpp
     src/texture.cpp
+    src/Button.cpp
 )
 
 target_include_directories(tetris PRIVATE

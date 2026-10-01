@@ -7,6 +7,8 @@ Texture::Texture(std::optional<SDL_Color> colorKey)
 
 Texture::~Texture() { destroy(); }
 
+auto Texture::getTexture() const -> SDL_Texture * { return m_texture; }
+
 Texture::Texture(Texture &&other) noexcept
     : m_texture{other.m_texture}, m_filePath{other.m_filePath},
       m_colorKey{other.m_colorKey}, m_currentClip{other.m_currentClip},

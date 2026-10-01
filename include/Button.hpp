@@ -1,7 +1,7 @@
 #ifndef BUTTON_HPP
 #define BUTTON_HPP
-
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_stdinc.h>
 #include <array>
 
 class Button {
@@ -11,6 +11,7 @@ private:
   float m_x{};
   float m_y{};
   SDL_FRect m_bounds{};
+  SDL_Texture *m_texture{};
 
   enum class State { Idle, Hovered, Clicked, Released };
   State m_state{State::Idle};
@@ -25,13 +26,19 @@ public:
 
   auto getBounds() const -> const SDL_FRect & { return m_bounds; }
 
+  auto setTexture(SDL_Texture *texture) -> void { m_texture = texture; }
+
   auto containsPoint(SDL_FPoint point) const -> bool {
     return SDL_PointInRectFloat(&point, &m_bounds);
   }
 
-  auto onHover() -> bool;
-  auto onClick() -> bool;
-  auto onRelease() -> bool;
+  auto onHover() -> void;
+  auto onClick() -> void;
+  auto onRelease() -> void;
+
+  auto getState() const -> State;
+  auto setState(State state) -> void;
+  auto setColorMod() -> void;
 };
 
 #endif // BUTTON_HPP

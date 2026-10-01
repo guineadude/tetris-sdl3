@@ -83,7 +83,7 @@ private:
   auto getRenderer() const -> SDL_Renderer * { return m_renderer; }
 
   // mouse
-  auto checkButtonBounds() -> std::optional<std::string_view>;
+  auto checkButtonBounds() -> Button *;
 };
 
 #endif // APP_HPP

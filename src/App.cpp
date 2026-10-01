@@ -64,12 +64,16 @@ void App::render() {
 
   auto &texture{m_textureArray[0].texture};
   texture.repositionClip(Texture::Clip::First);
+  m_button1.setColorMod();
   texture.render(m_renderer, m_button1.getBounds());
   texture.repositionClip(Texture::Clip::Second);
+  m_button2.setColorMod();
   texture.render(m_renderer, m_button2.getBounds());
   texture.repositionClip(Texture::Clip::Third);
+  m_button3.setColorMod();
   texture.render(m_renderer, m_button3.getBounds());
   texture.repositionClip(Texture::Clip::Fourth);
+  m_button4.setColorMod();
   texture.render(m_renderer, m_button4.getBounds());
 
   // m_textTexture.render(m_renderer, k_destRect);
@@ -86,19 +90,19 @@ void App::handleEvents(SDL_Event *event, int &exitCode) {
       switch (event->key.key) {}
     }
     if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-      if (auto buttonName = checkButtonBounds()) {
-        SDL_Log("Mouse is over %s", buttonName->data());
+      if (auto *button = checkButtonBounds()) {
+        button->onClick();
       }
     }
     if (event->type == SDL_EVENT_MOUSE_BUTTON_UP) {
-      if (auto buttonName = checkButtonBounds()) {
-        SDL_Log("Mouse released over %s", buttonName->data());
+      if (auto *button = checkButtonBounds()) {
+        button->onRelease();
       }
     }
     if (event->type == SDL_EVENT_MOUSE_MOTION) {
-      float x = -1.f, y = -1.f;
-      SDL_GetMouseState(&x, &y);
-      SDL_Log("Mouse motion at (%f, %f)", x, y);
+      if (auto *button = checkButtonBounds()) {
+        button->onHover();
+      }
     }
   }
 }
@@ -133,6 +137,12 @@ bool App::initializeTextures() {
     }
   }
 
+  SDL_Texture *buttonTexture{m_textureArray[0].texture.getTexture()};
+  m_button1.setTexture(buttonTexture);
+  m_button2.setTexture(buttonTexture);
+  m_button3.setTexture(buttonTexture);
+  m_button4.setTexture(buttonTexture);
+
   // if (!m_textTexture.loadFromRenderedText("Score: 100", k_defaultFontColor,
   // m_font, m_renderer))
   // {
@@ -143,23 +153,23 @@ bool App::initializeTextures() {
   return true;
 }
 
-auto App::checkButtonBounds() -> std::optional<std::string_view> {
+auto App::checkButtonBounds() -> Button * {
   float x = -1.f, y = -1.f;
   SDL_GetMouseState(&x, &y);
   const SDL_FPoint mousePos{x, y};
 
   if (m_button1.containsPoint(mousePos)) {
-    return "button1";
+    return &m_button1;
   }
   if (m_button2.containsPoint(mousePos)) {
-    return "button2";
+    return &m_button2;
   }
   if (m_button3.containsPoint(mousePos)) {
-    return "button3";
+    return &m_button3;
   }
   if (m_button4.containsPoint(mousePos)) {
-    return "button4";
+    return &m_button4;
   }
 
-  return std::nullopt;
+  return nullptr;
 }
