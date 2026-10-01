@@ -76,15 +76,18 @@ void App::render()
     SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderClear(m_renderer);
 
-    const static SDL_FRect k_destRect{
-        0.0f,
-        0.0f,
-        static_cast<float>(k_defaultWidth),
-        static_cast<float>(k_defaultHeight)};
+    auto &button{m_textureArray[0].texture};
+    constexpr float kClipSize{static_cast<float>(k_defaultWidth) * .5f};
+    button.repositionClip(Texture::Clip::First);
+    button.render(m_renderer, SDL_FRect{0.0f, 0.0f, kClipSize, kClipSize});
+    button.repositionClip(Texture::Clip::Second);
+    button.render(m_renderer, SDL_FRect{kClipSize, 0.0f, kClipSize, kClipSize});
+    button.repositionClip(Texture::Clip::Third);
+    button.render(m_renderer, SDL_FRect{0.0f, kClipSize, kClipSize, kClipSize});
+    button.repositionClip(Texture::Clip::Fourth);
+    button.render(m_renderer, SDL_FRect{kClipSize, kClipSize, kClipSize, kClipSize});
 
-    m_textureArray[0].texture.render(m_renderer, k_destRect);
-
-    m_textTexture.render(m_renderer, k_destRect);
+    // m_textTexture.render(m_renderer, k_destRect);
 
     SDL_RenderPresent(m_renderer);
 }
@@ -116,13 +119,19 @@ void App::handleEvents(SDL_Event *event, int &exitCode)
 void App::addTexturesToArray()
 {
     TextureAsset imgToRender{
-        Texture{SDL_Color{0x00, 0x00, 0x00, 0xFF}},
-        "assets\\colors.png"};
+        Texture{},
+        "assets\\button.png"};
+
+    constexpr float kButtonWidth{300.0f};
+    constexpr float kButtonHeight{200.0f};
+
+    imgToRender.texture.populateClips({SDL_FRect{0.0f, 0.0f, kButtonWidth, kButtonHeight},
+                                       SDL_FRect{0.0f, kButtonHeight, kButtonWidth, kButtonHeight},
+                                       SDL_FRect{0.0f, kButtonHeight * 2.0f, kButtonWidth, kButtonHeight},
+                                       SDL_FRect{0.0f, kButtonHeight * 3.0f, kButtonWidth, kButtonHeight}});
 
     m_textureArray[0] = std::move(imgToRender);
-    // return true;
 }
-
 bool App::initializeTextures()
 {
     for (auto &textureAsset : m_textureArray)
@@ -134,11 +143,11 @@ bool App::initializeTextures()
         }
     }
 
-    if (!m_textTexture.loadFromRenderedText("Score: 100", k_defaultFontColor, m_font, m_renderer))
-    {
-        SDL_Log("Failed to create text texture");
-        return false;
-    }
+    // if (!m_textTexture.loadFromRenderedText("Score: 100", k_defaultFontColor, m_font, m_renderer))
+    // {
+    //     SDL_Log("Failed to create text texture");
+    //     return false;
+    // }
 
     return true;
 }

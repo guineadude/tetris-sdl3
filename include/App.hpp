@@ -18,8 +18,8 @@ public:
         std::string_view path;
     };
 
-    static constexpr int k_defaultWidth{640};
-    static constexpr int k_defaultHeight{240};
+    static constexpr int k_defaultWidth{500};
+    static constexpr int k_defaultHeight{500};
     static constexpr std::size_t k_numTextures{1};
     static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};
     static constexpr int k_fontSize{50};

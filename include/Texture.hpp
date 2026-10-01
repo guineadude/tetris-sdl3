@@ -21,7 +21,6 @@ public:
     enum class Clip : std::size_t
     {
         None,
-        Default,
         First,
         Second,
         Third,

@@ -77,9 +77,8 @@ bool Texture::loadFromRenderedText(std::string_view text, SDL_Color color, TTF_F
 {
     destroy();
 
-    const std::string textString{text};
     SDL_Surface *textSurface{
-        TTF_RenderText_Blended(font, textString.c_str(), 0, color)};
+        TTF_RenderText_Blended(font, text.data(), 0, color)};
 
     if (!textSurface)
     {
