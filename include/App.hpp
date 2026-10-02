@@ -7,8 +7,10 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "DemoScene.hpp"
+#include "FrameTimer.hpp"
 
-class App {
+class App
+{
 public:
   static constexpr int k_defaultWidth{500};
   static constexpr int k_defaultHeight{500};
@@ -33,27 +35,34 @@ private:
   SDL_Renderer *m_renderer{};
   TTF_Font *m_font{};
   DemoScene m_scene{};
+  FrameTimer m_frameTimer{};
 
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
   auto render() -> void;
   auto initializeWindow(std::string_view name, int width = k_defaultWidth,
-                        int height = k_defaultHeight) -> bool {
-    if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window) {
+                        int height = k_defaultHeight) -> bool
+  {
+    if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window)
+    {
       SDL_Log("Window initialization failed: %s", SDL_GetError());
       return false;
     }
     return true;
   }
-  auto initializeRenderer() -> bool {
-    if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer) {
+  auto initializeRenderer() -> bool
+  {
+    if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer)
+    {
       SDL_Log("Renderer initialization failed: %s", SDL_GetError());
       return false;
     }
     return true;
   }
   auto initializeFont(std::string_view path = k_fontPath,
-                      int fontSize = k_fontSize) -> bool {
-    if (m_font = TTF_OpenFont(path.data(), fontSize); !m_font) {
+                      int fontSize = k_fontSize) -> bool
+  {
+    if (m_font = TTF_OpenFont(path.data(), fontSize); !m_font)
+    {
       SDL_Log("Font initialization failed: %s", SDL_GetError());
       return false;
     }
