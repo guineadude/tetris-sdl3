@@ -17,7 +17,7 @@ public:
 
   // font
   static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};
-  static constexpr int k_fontSize{50};
+  static constexpr int k_fontSize{40};
 
   App();
   ~App();
@@ -39,6 +39,7 @@ private:
 
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
   auto render() -> void;
+  auto renderDebugOverlay() -> void;
   auto initializeWindow(std::string_view name, int width = k_defaultWidth,
                         int height = k_defaultHeight) -> bool
   {

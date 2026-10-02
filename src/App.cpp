@@ -78,6 +78,10 @@ void App::render()
   SDL_RenderPresent(m_renderer);
 }
 
+void App::renderDebugOverlay()
+{
+}
+
 void App::handleEvents(SDL_Event *event, int &exitCode)
 {
   while (SDL_PollEvent(event) == true && exitCode == 0)

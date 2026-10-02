@@ -14,9 +14,10 @@
 
 // Throwaway SDL learning scaffolding; to be replaced by real Tetris scene
 // logic.
-class DemoScene {
+class DemoScene
+{
 public:
-  static constexpr std::size_t k_buttonCount{4};
+  static constexpr std::size_t k_buttonCount{1};
 
   DemoScene() = default;
 
@@ -27,11 +28,11 @@ public:
 
 private:
   static constexpr std::string_view k_backgroundPath{"assets\\kappn.png"};
-  static constexpr SDL_Color k_defaultFontColor{0x00, 0x00, 0x00, 0xFF};
+  static constexpr SDL_Color k_defaultFontColor{0x00, 0x00, 0xFF, 0xFF};
 
   Texture m_backgroundTexture{};
   Texture m_textTexture{};
-  std::string m_text{"SampleTXT"};
+  std::string m_text{"Click to start timer:"};
   std::array<Button, k_buttonCount> m_buttons{};
   int m_windowWidth{};
   int m_windowHeight{};
