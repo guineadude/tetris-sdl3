@@ -19,7 +19,8 @@ public:
   static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};
   static constexpr int k_fontSize{40};
 
-  App();
+  App() : m_scene{[this]
+                  { toggleRenderDebugOverlay(); }} {}
   ~App();
 
   App(const App &) = delete;
@@ -36,10 +37,11 @@ private:
   TTF_Font *m_font{};
   DemoScene m_scene{};
   FrameTimer m_frameTimer{};
+  bool m_renderDebugOverlay{false};
 
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
   auto render() -> void;
-  auto renderDebugOverlay() -> void;
+  auto toggleRenderDebugOverlay() -> void;
   auto initializeWindow(std::string_view name, int width = k_defaultWidth,
                         int height = k_defaultHeight) -> bool
   {

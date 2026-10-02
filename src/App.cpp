@@ -1,7 +1,5 @@
 #include "App.hpp"
 
-App::App() {}
-
 App::~App()
 {
   if (m_font)
@@ -78,8 +76,10 @@ void App::render()
   SDL_RenderPresent(m_renderer);
 }
 
-void App::renderDebugOverlay()
+void App::toggleRenderDebugOverlay()
 {
+  m_renderDebugOverlay = !m_renderDebugOverlay;
+  SDL_Log("Toggled render debug overlay %s", m_renderDebugOverlay ? "ON" : "OFF");
 }
 
 void App::handleEvents(SDL_Event *event, int &exitCode)

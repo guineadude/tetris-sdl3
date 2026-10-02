@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <string>
 #include <string_view>
+#include <functional>
+#include <utility>
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
@@ -20,6 +22,8 @@ public:
   static constexpr std::size_t k_buttonCount{1};
 
   DemoScene() = default;
+  DemoScene(std::function<void()> debug_Callback)
+      : m_toggleDebugOverlay_Callback(std::move(debug_Callback)) {}
 
   auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth,
                   int windowHeight) -> bool;
@@ -36,7 +40,7 @@ private:
   std::array<Button, k_buttonCount> m_buttons{};
   int m_windowWidth{};
   int m_windowHeight{};
-
+  std::function<void()> m_toggleDebugOverlay_Callback{};
   auto layoutButtons() -> void;
   auto findButtonAt(SDL_FPoint point) -> Button *;
 };

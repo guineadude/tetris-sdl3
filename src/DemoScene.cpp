@@ -74,7 +74,8 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
     switch (event.key.key)
     {
     case SDLK_GRAVE:
-      renderDebugOverlay();
+      if (m_toggleDebugOverlay_Callback)
+        m_toggleDebugOverlay_Callback();
       break;
     }
   }
