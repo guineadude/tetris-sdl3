@@ -22,8 +22,10 @@ public:
   static constexpr std::size_t k_buttonCount{1};
 
   DemoScene() = default;
-  DemoScene(std::function<void()> debug_Callback)
-      : m_toggleDebugOverlay_Callback(std::move(debug_Callback)) {}
+  DemoScene(std::function<void()> debug_Callback,
+            std::function<void()> toggleFrameTimer_Callback)
+      : m_toggleDebugOverlay_Callback(std::move(debug_Callback)),
+        m_toggleFrameTimer_Callback(std::move(toggleFrameTimer_Callback)) {}
 
   auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth,
                   int windowHeight) -> bool;
@@ -41,6 +43,7 @@ private:
   int m_windowWidth{};
   int m_windowHeight{};
   std::function<void()> m_toggleDebugOverlay_Callback{};
+  std::function<void()> m_toggleFrameTimer_Callback{};
   auto layoutButtons() -> void;
   auto findButtonAt(SDL_FPoint point) -> Button *;
 };

@@ -7,10 +7,8 @@ auto Button::onRelease() -> void { m_state = State::Released; }
 auto Button::getState() const -> State { return m_state; }
 auto Button::setState(State state) -> void { m_state = state; }
 
-auto Button::render(SDL_Renderer *renderer) const -> void
-{
-  switch (m_state)
-  {
+auto Button::render(SDL_Renderer *renderer) const -> void {
+  switch (m_state) {
   case State::Idle:
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     break;
@@ -26,4 +24,9 @@ auto Button::render(SDL_Renderer *renderer) const -> void
   }
 
   SDL_RenderFillRect(renderer, &m_bounds);
+}
+
+void Button::onClick() {
+  if (m_onClick)
+    m_onClick();
 }

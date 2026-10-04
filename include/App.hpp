@@ -20,7 +20,9 @@ public:
   static constexpr int k_fontSize{40};
 
   App() : m_scene{[this]
-                  { toggleRenderDebugOverlay(); }} {}
+                  { toggleRenderDebugOverlay(); },
+                  [this]
+                  { m_frameTimer.toggleOnOff(); }} {}
   ~App();
 
   App(const App &) = delete;

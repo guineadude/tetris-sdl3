@@ -3,16 +3,14 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_stdinc.h>
-class FrameTimer
-{
+class FrameTimer {
 private:
-    Uint64 m_startTick{};
+  Uint64 m_startTick{};
 
 public:
-    auto start() -> void;
-    auto reset() -> void;
-    auto stop() -> void;
-    auto tick() -> void;
+  auto toggleOnOff() -> void;
+  auto reset() -> void;
+  auto tick() -> void;
 };
 
 #endif // FRAME_TIMER_HPP
