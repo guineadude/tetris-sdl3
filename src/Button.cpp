@@ -1,7 +1,11 @@
 #include "Button.hpp"
 
 auto Button::onHover() -> void { m_state = State::Hovered; }
-auto Button::onClick() -> void { m_state = State::Clicked; }
+auto Button::onClick() -> void {
+  m_state = State::Clicked;
+  if (m_onClick)
+    m_onClick();
+}
 auto Button::onRelease() -> void { m_state = State::Released; }
 
 auto Button::getState() const -> State { return m_state; }
@@ -24,9 +28,4 @@ auto Button::render(SDL_Renderer *renderer) const -> void {
   }
 
   SDL_RenderFillRect(renderer, &m_bounds);
-}
-
-void Button::onClick() {
-  if (m_onClick)
-    m_onClick();
 }

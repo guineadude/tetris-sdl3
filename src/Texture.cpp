@@ -40,7 +40,8 @@ bool Texture::loadFromRenderedText(std::string_view text, SDL_Color color,
                                    TTF_Font *font, SDL_Renderer *renderer) {
   destroy();
 
-  SDL_Surface *textSurface{TTF_RenderText_Blended(font, text.data(), 0, color)};
+  SDL_Surface *textSurface{
+      TTF_RenderText_Blended_Wrapped(font, text.data(), 0, color, 0)};
 
   if (!textSurface) {
     SDL_Log("Unable to render text: %s", SDL_GetError());

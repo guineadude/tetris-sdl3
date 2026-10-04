@@ -32,6 +32,8 @@ bool App::init() {
     return false;
   }
 
+  m_frameTimer.updateStatsTexture(m_renderer, m_font);
+
   return true;
 }
 
@@ -49,6 +51,7 @@ int App::run() {
 
   while (exitCode == 0) {
     handleEvents(&event, exitCode);
+    m_frameTimer.tick(m_renderer, m_font);
     render();
   }
 
@@ -60,6 +63,10 @@ void App::render() {
   SDL_RenderClear(m_renderer);
 
   m_scene.render(m_renderer);
+
+  if (m_renderDebugOverlay) {
+    m_frameTimer.renderStatsTexture(m_renderer, SDL_FPoint{10.F, 10.F});
+  }
 
   SDL_RenderPresent(m_renderer);
 }

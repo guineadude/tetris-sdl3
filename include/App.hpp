@@ -22,7 +22,10 @@ public:
   App() : m_scene{[this]
                   { toggleRenderDebugOverlay(); },
                   [this]
-                  { m_frameTimer.toggleOnOff(); }} {}
+                  {
+                    m_frameTimer.toggleOnOff();
+                    m_frameTimer.updateStatsTexture(m_renderer, m_font);
+                  }} {}
   ~App();
 
   App(const App &) = delete;

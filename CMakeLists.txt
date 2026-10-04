@@ -26,6 +26,7 @@ add_executable(tetris
     src/Texture.cpp
     src/Button.cpp
     src/DemoScene.cpp
+    src/FrameTimer.cpp
 )
 
 target_include_directories(tetris PRIVATE
