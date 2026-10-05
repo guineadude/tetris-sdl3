@@ -39,7 +39,7 @@ bool App::init()
     SDL_Log("Font initialization failed: %s", SDL_GetError());
     return false;
   }
-  if (SDL_SetRenderVSync(m_renderer, k_maxFPS) != 0)
+  if (!SDL_SetRenderVSync(m_renderer, m_maxFPS))
   {
     SDL_Log("Failed to set VSync: %s", SDL_GetError());
     return false;
@@ -73,11 +73,13 @@ int App::run()
 
 void App::render()
 {
+  // updating settings
+  tick();
+
+  // rendering
   SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(m_renderer);
-
   m_scene.render(m_renderer);
-
   SDL_RenderPresent(m_renderer);
 }
 
@@ -101,4 +103,23 @@ void App::handleEvents(SDL_Event *event, int &exitCode)
 
     m_scene.handleEvent(*event, exitCode);
   }
+}
+
+void App::tick()
+{
+  if (!m_capFramerate)
+  {
+    return;
+  }
+
+  const Uint64 targetFrameNs{1'000'000'000ull / static_cast<Uint64>(m_maxFPS)};
+  const Uint64 currentTicks{SDL_GetTicksNS()};
+  const Uint64 elapsedTicks{currentTicks - m_lastTickCount};
+
+  if (elapsedTicks < targetFrameNs) // if time since last tick is less than target frame time
+  {
+    SDL_DelayNS(targetFrameNs - elapsedTicks); // delay to maintain target frame rate
+  }
+
+  m_lastTickCount = currentTicks;
 }

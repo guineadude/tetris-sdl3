@@ -1,17 +1,20 @@
 #include "DemoScene.hpp"
 
 auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
-                           int windowWidth, int windowHeight) -> bool {
+                           int windowWidth, int windowHeight) -> bool
+{
   m_windowWidth = windowWidth;
   m_windowHeight = windowHeight;
 
-  if (!m_backgroundTexture.loadFromFile(k_backgroundPath.data(), renderer)) {
+  if (!m_backgroundTexture.loadFromFile(k_backgroundPath.data(), renderer))
+  {
     SDL_Log("Failed to load image: %s", SDL_GetError());
     return false;
   }
 
   if (!m_textTexture.loadFromRenderedText(m_text, k_defaultFontColor, font,
-                                          renderer)) {
+                                          renderer))
+  {
     SDL_Log("Failed to create text texture: %s", SDL_GetError());
     return false;
   }
@@ -19,11 +22,14 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
   return true;
 }
 
-auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void {
+auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
+{
   (void)exitCode;
 
-  if (event.type == SDL_EVENT_KEY_DOWN) {
-    switch (event.key.key) {
+  if (event.type == SDL_EVENT_KEY_DOWN)
+  {
+    switch (event.key.key)
+    {
     case SDLK_GRAVE:
       if (m_toggleDebugOverlay_Callback)
         m_toggleDebugOverlay_Callback();
@@ -32,7 +38,8 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void {
   }
 }
 
-auto DemoScene::render(SDL_Renderer *renderer) -> void {
+auto DemoScene::render(SDL_Renderer *renderer) -> void
+{
   const SDL_FRect backgroundRect{0.0f, 0.0f, static_cast<float>(m_windowWidth),
                                  static_cast<float>(m_windowHeight)};
   m_backgroundTexture.render(renderer, backgroundRect);

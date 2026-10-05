@@ -13,7 +13,6 @@ class App
 public:
   static constexpr int k_defaultWidth{500};
   static constexpr int k_defaultHeight{500};
-  static constexpr int k_maxFPS{60};
 
   // font
   static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};
@@ -36,8 +35,31 @@ private:
   TTF_Font *m_font{};
   DemoScene m_scene{};
 
+  // framerate and vsync settings
+  int m_maxFPS{60};
+  bool m_vsyncEnabled{true};
+  bool m_capFramerate{true};
+  Uint64 m_tickCount{};
+  Uint64 m_lastTickCount{};
+
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
+  auto tick() -> void;
   auto render() -> void;
+
+  auto toggleSettings() -> void
+  {
+    toggleVsync();
+    toggleFramerateCap();
+  }
+  auto toggleVsync() -> void
+  {
+    m_vsyncEnabled = !m_vsyncEnabled;
+    SDL_SetRenderVSync(m_renderer, m_vsyncEnabled ? true : false);
+  }
+  auto toggleFramerateCap() -> void
+  {
+    m_capFramerate = !m_capFramerate;
+  };
   auto initializeWindow(std::string_view name, int width = k_defaultWidth,
                         int height = k_defaultHeight) -> bool
   {
