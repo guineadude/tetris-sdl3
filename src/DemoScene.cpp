@@ -16,50 +16,12 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
     return false;
   }
 
-  layoutButtons();
-
   return true;
-}
-
-auto DemoScene::layoutButtons() -> void {
-  const float kClipSize{static_cast<float>(m_windowWidth) * 0.5f};
-  const float kButtonX{static_cast<float>(m_windowWidth) * 0.25f};
-  const float kButtonY{static_cast<float>(m_windowHeight) * 0.5f};
-
-  m_buttons[0] = Button{kButtonX, kButtonY, kClipSize, kClipSize * 0.5f};
-  m_buttons[0].setOnClick([this] {
-    if (m_toggleFrameTimer_Callback)
-      m_toggleFrameTimer_Callback();
-  });
-}
-
-auto DemoScene::findButtonAt(SDL_FPoint point) -> Button * {
-  for (auto &button : m_buttons) {
-    if (button.containsPoint(point)) {
-      return &button;
-    }
-  }
-  return nullptr;
 }
 
 auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void {
   (void)exitCode;
 
-  if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-    if (auto *button = findButtonAt({event.button.x, event.button.y})) {
-      button->onClick();
-    }
-  }
-  if (event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
-    if (auto *button = findButtonAt({event.button.x, event.button.y})) {
-      button->onRelease();
-    }
-  }
-  if (event.type == SDL_EVENT_MOUSE_MOTION) {
-    if (auto *button = findButtonAt({event.motion.x, event.motion.y})) {
-      button->onHover();
-    }
-  }
   if (event.type == SDL_EVENT_KEY_DOWN) {
     switch (event.key.key) {
     case SDLK_GRAVE:
@@ -80,8 +42,4 @@ auto DemoScene::render(SDL_Renderer *renderer) -> void {
                            static_cast<float>(m_textTexture.getWidth()),
                            static_cast<float>(m_textTexture.getHeight())};
   m_textTexture.render(renderer, textRect);
-
-  for (auto &button : m_buttons) {
-    button.render(renderer);
-  }
 }

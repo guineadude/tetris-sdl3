@@ -7,25 +7,19 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "DemoScene.hpp"
-#include "FrameTimer.hpp"
 
 class App
 {
 public:
   static constexpr int k_defaultWidth{500};
   static constexpr int k_defaultHeight{500};
+  static constexpr int k_maxFPS{60};
 
   // font
   static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};
   static constexpr int k_fontSize{40};
 
-  App() : m_scene{[this]
-                  { toggleRenderDebugOverlay(); },
-                  [this]
-                  {
-                    m_frameTimer.toggleOnOff();
-                    m_frameTimer.updateStatsTexture(m_renderer, m_font);
-                  }} {}
+  App() = default;
   ~App();
 
   App(const App &) = delete;
@@ -41,12 +35,9 @@ private:
   SDL_Renderer *m_renderer{};
   TTF_Font *m_font{};
   DemoScene m_scene{};
-  FrameTimer m_frameTimer{};
-  bool m_renderDebugOverlay{false};
 
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
   auto render() -> void;
-  auto toggleRenderDebugOverlay() -> void;
   auto initializeWindow(std::string_view name, int width = k_defaultWidth,
                         int height = k_defaultHeight) -> bool
   {

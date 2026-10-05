@@ -1,7 +1,9 @@
 #include "App.hpp"
 
-App::~App() {
-  if (m_font) {
+App::~App()
+{
+  if (m_font)
+  {
     TTF_CloseFont(m_font);
   }
   TTF_Quit();
@@ -10,80 +12,87 @@ App::~App() {
   SDL_Quit();
 }
 
-bool App::init() {
-  if (!SDL_Init(SDL_INIT_VIDEO)) {
+bool App::init()
+{
+  if (!SDL_Init(SDL_INIT_VIDEO))
+  {
     SDL_Log("SDL_Init failed: %s", SDL_GetError());
     return false;
   }
-  if (!TTF_Init()) {
+  if (!TTF_Init())
+  {
     SDL_Log("TTF_Init failed: %s", SDL_GetError());
     return false;
   }
-  if (!initializeWindow("Tetris")) {
+  if (!initializeWindow("Tetris"))
+  {
     SDL_Log("Window initialization failed: %s", SDL_GetError());
     return false;
   }
-  if (!initializeRenderer()) {
+  if (!initializeRenderer())
+  {
     SDL_Log("Renderer initialization failed: %s", SDL_GetError());
     return false;
   }
-  if (!initializeFont()) {
+  if (!initializeFont())
+  {
     SDL_Log("Font initialization failed: %s", SDL_GetError());
     return false;
   }
-
-  m_frameTimer.updateStatsTexture(m_renderer, m_font);
+  if (SDL_SetRenderVSync(m_renderer, k_maxFPS) != 0)
+  {
+    SDL_Log("Failed to set VSync: %s", SDL_GetError());
+    return false;
+  }
 
   return true;
 }
 
-int App::run() {
+int App::run()
+{
   int exitCode{};
 
   SDL_Event event;
   SDL_zero(event);
 
   if (!m_scene.loadAssets(m_renderer, m_font, k_defaultWidth,
-                          k_defaultHeight)) {
+                          k_defaultHeight))
+  {
     SDL_Log("Failed to load scene assets: %s", SDL_GetError());
     return 2;
   }
 
-  while (exitCode == 0) {
+  while (exitCode == 0)
+  {
     handleEvents(&event, exitCode);
-    m_frameTimer.tick(m_renderer, m_font);
     render();
   }
 
   return exitCode;
 }
 
-void App::render() {
+void App::render()
+{
   SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(m_renderer);
 
   m_scene.render(m_renderer);
 
-  if (m_renderDebugOverlay) {
-    m_frameTimer.renderStatsTexture(m_renderer, SDL_FPoint{10.F, 10.F});
-  }
-
   SDL_RenderPresent(m_renderer);
 }
 
-void App::toggleRenderDebugOverlay() {
-  m_renderDebugOverlay = !m_renderDebugOverlay;
-  SDL_Log("Toggled render debug overlay %s",
-          m_renderDebugOverlay ? "ON" : "OFF");
-}
-
-void App::handleEvents(SDL_Event *event, int &exitCode) {
-  while (SDL_PollEvent(event) == true && exitCode == 0) {
-    if (event->type == SDL_EVENT_QUIT) {
+void App::handleEvents(SDL_Event *event, int &exitCode)
+{
+  while (SDL_PollEvent(event) == true && exitCode == 0)
+  {
+    if (event->type == SDL_EVENT_QUIT)
+    {
       exitCode = -1;
     }
-    if (event->type == SDL_EVENT_KEY_DOWN) {
-      switch (event->key.key) {
+    if (event->type == SDL_EVENT_KEY_DOWN)
+    {
+      switch (event->key.key)
+      {
       case SDLK_ESCAPE:
         exitCode = -1;
         break;
