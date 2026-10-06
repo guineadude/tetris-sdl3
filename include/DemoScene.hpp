@@ -35,6 +35,32 @@ private:
   int m_windowWidth{};
   int m_windowHeight{};
   std::function<void()> m_toggleDebugOverlay_Callback{};
+
+  enum class InputType
+  {
+    Unmapped,
+    Player,
+    System
+  };
+  auto getInputType(const SDL_Event &event) const -> InputType
+  {
+    if (event.type == SDL_EVENT_KEY_DOWN)
+    {
+      switch (event.key.key)
+      {
+      case SDLK_GRAVE:
+        return InputType::System;
+        break;
+      case SDLK_UP:
+      case SDLK_DOWN:
+      case SDLK_LEFT:
+      case SDLK_RIGHT:
+        return InputType::Player;
+        break;
+      }
+    }
+    return InputType::Unmapped; // Default to Unmapped if no relevant key is pressed
+  }
 };
 
 #endif // DEMO_SCENE_HPP

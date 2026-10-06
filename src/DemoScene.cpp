@@ -26,14 +26,17 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
 {
   (void)exitCode;
 
-  if (event.type == SDL_EVENT_KEY_DOWN)
+  auto inputType{getInputType(event)};
+
+  switch (inputType)
   {
-    switch (event.key.key)
-    {
-    case SDLK_GRAVE:
-      m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_Log("Debug overlay callback nullptr");
-      break;
-    }
+  case InputType::Player:
+    SDL_Log("Player input detected");
+    break;
+  case InputType::System:
+    SDL_Log("System input detected");
+    m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_Log("Debug overlay callback nullptr");
+    break;
   }
 }
 

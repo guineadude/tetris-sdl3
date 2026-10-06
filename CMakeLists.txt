@@ -25,6 +25,7 @@ add_executable(tetris
     src/App.cpp
     src/Texture.cpp
     src/Button.cpp
+    src/Dot.cpp
     src/DemoScene.cpp
 )
 
