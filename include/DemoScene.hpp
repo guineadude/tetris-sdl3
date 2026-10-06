@@ -24,11 +24,12 @@ public:
   };
 
   DemoScene() = default;
-  explicit DemoScene(int windowWidth, int windowHeight,
+  explicit DemoScene(int windowWidth, int windowHeight, int maxFPS,
                      std::function<void()> debug_Callback,
                      KeyEventMode playerKeyEvents = KeyEventMode::KeyDownAndUp,
                      KeyEventMode systemKeyEvents = KeyEventMode::KeyDownOnly)
       : m_windowWidth{windowWidth}, m_windowHeight{windowHeight},
+        m_maxFPS{maxFPS},
         m_toggleDebugOverlay_Callback{std::move(debug_Callback)},
         m_playerKeyEvents{playerKeyEvents}, m_systemKeyEvents{systemKeyEvents} {}
 
@@ -46,10 +47,11 @@ private:
   std::string m_text{"Press ~ to print debug stats"};
   int m_windowWidth{};
   int m_windowHeight{};
-  Dot m_dot{m_windowWidth, m_windowHeight};
+  Dot m_dot{m_windowWidth, m_windowHeight, m_maxFPS};
   std::function<void()> m_toggleDebugOverlay_Callback{};
   KeyEventMode m_playerKeyEvents{KeyEventMode::KeyDownAndUp};
   KeyEventMode m_systemKeyEvents{KeyEventMode::KeyDownOnly};
+  const int m_maxFPS{};
 
   enum class InputType
   {

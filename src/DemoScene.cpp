@@ -20,7 +20,7 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
     return false;
   }
 
-  if (!m_dot.loadTexture(renderer))
+  if (!m_dot.loadAssets(renderer))
   {
     SDL_Log("Failed to load dot texture: %s", SDL_GetError());
     return false;
@@ -38,11 +38,9 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
   switch (inputType)
   {
   case InputType::Player:
-    SDL_Log("Player input detected");
     m_dot.handleEvent(event);
     break;
   case InputType::System:
-    SDL_Log("System input detected");
     m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_Log("Debug overlay callback nullptr");
     break;
   }
