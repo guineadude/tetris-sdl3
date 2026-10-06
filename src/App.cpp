@@ -39,7 +39,7 @@ bool App::init()
     SDL_Log("Font initialization failed: %s", SDL_GetError());
     return false;
   }
-  if (!SDL_SetRenderVSync(m_renderer, m_maxFPS))
+  if (!SDL_SetRenderVSync(m_renderer, 1))
   {
     SDL_Log("Failed to set VSync: %s", SDL_GetError());
     return false;

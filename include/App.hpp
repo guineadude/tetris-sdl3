@@ -16,7 +16,7 @@ public:
 
   // font
   static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};
-  static constexpr int k_fontSize{40};
+  static constexpr int k_fontSize{30};
 
   App() = default;
   ~App();
@@ -33,7 +33,8 @@ private:
   SDL_Window *m_window{};
   SDL_Renderer *m_renderer{};
   TTF_Font *m_font{};
-  DemoScene m_scene{};
+  DemoScene m_scene{[this]()
+                    { toggleSettings(); }};
 
   // framerate and vsync settings
   int m_maxFPS{60};
@@ -50,6 +51,9 @@ private:
   {
     toggleVsync();
     toggleFramerateCap();
+    SDL_Log("Toggling settings: VSync is now %s, Framerate cap is now %s",
+            m_vsyncEnabled ? "enabled" : "disabled",
+            m_capFramerate ? "capped" : "uncapped");
   }
   auto toggleVsync() -> void
   {

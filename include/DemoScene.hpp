@@ -18,7 +18,7 @@ class DemoScene
 public:
   DemoScene() = default;
   explicit DemoScene(std::function<void()> debug_Callback)
-      : m_toggleDebugOverlay_Callback(std::move(debug_Callback)) {}
+      : m_toggleDebugOverlay_Callback{std::move(debug_Callback)} {}
 
   auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth,
                   int windowHeight) -> bool;
@@ -26,7 +26,7 @@ public:
   auto render(SDL_Renderer *renderer) -> void;
 
 private:
-  static constexpr std::string_view k_backgroundPath{"assets\\kappn.png"};
+  // static constexpr std::string_view k_backgroundPath{"assets\\kappn.png"};
   static constexpr SDL_Color k_defaultFontColor{0x00, 0x00, 0xFF, 0xFF};
 
   Texture m_backgroundTexture{};
