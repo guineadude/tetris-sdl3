@@ -17,9 +17,20 @@
 class DemoScene
 {
 public:
+  enum class KeyEventMode
+  {
+    KeyDownOnly,
+    KeyDownAndUp
+  };
+
   DemoScene() = default;
-  explicit DemoScene(int windowWidth, int windowHeight, std::function<void()> debug_Callback)
-      : m_windowWidth{windowWidth}, m_windowHeight{windowHeight}, m_toggleDebugOverlay_Callback{std::move(debug_Callback)} {}
+  explicit DemoScene(int windowWidth, int windowHeight,
+                     std::function<void()> debug_Callback,
+                     KeyEventMode playerKeyEvents = KeyEventMode::KeyDownAndUp,
+                     KeyEventMode systemKeyEvents = KeyEventMode::KeyDownOnly)
+      : m_windowWidth{windowWidth}, m_windowHeight{windowHeight},
+        m_toggleDebugOverlay_Callback{std::move(debug_Callback)},
+        m_playerKeyEvents{playerKeyEvents}, m_systemKeyEvents{systemKeyEvents} {}
 
   auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth,
                   int windowHeight) -> bool;
@@ -37,6 +48,8 @@ private:
   int m_windowHeight{};
   Dot m_dot{m_windowWidth, m_windowHeight};
   std::function<void()> m_toggleDebugOverlay_Callback{};
+  KeyEventMode m_playerKeyEvents{KeyEventMode::KeyDownAndUp};
+  KeyEventMode m_systemKeyEvents{KeyEventMode::KeyDownOnly};
 
   enum class InputType
   {
@@ -46,22 +59,37 @@ private:
   };
   auto getInputType(const SDL_Event &event) const -> InputType
   {
-    if (event.type == SDL_EVENT_KEY_DOWN)
+    if (event.type != SDL_EVENT_KEY_DOWN && event.type != SDL_EVENT_KEY_UP)
     {
-      switch (event.key.key)
-      {
-      case SDLK_GRAVE:
-        return InputType::System;
-        break;
-      case SDLK_UP:
-      case SDLK_DOWN:
-      case SDLK_LEFT:
-      case SDLK_RIGHT:
-        return InputType::Player;
-        break;
-      }
+      return InputType::Unmapped;
     }
-    return InputType::Unmapped; // Default to Unmapped if no relevant key is pressed
+
+    InputType inputType{InputType::Unmapped};
+    switch (event.key.key)
+    {
+    case SDLK_GRAVE:
+      inputType = InputType::System;
+      break;
+    case SDLK_UP:
+    case SDLK_DOWN:
+    case SDLK_LEFT:
+    case SDLK_RIGHT:
+      inputType = InputType::Player;
+      break;
+    default:
+      return InputType::Unmapped;
+    }
+
+    const KeyEventMode eventMode{inputType == InputType::Player
+                                     ? m_playerKeyEvents
+                                     : m_systemKeyEvents};
+    if (event.type == SDL_EVENT_KEY_UP &&
+        eventMode == KeyEventMode::KeyDownOnly)
+    {
+      return InputType::Unmapped;
+    }
+
+    return inputType;
   }
 };
 

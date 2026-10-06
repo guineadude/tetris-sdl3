@@ -5,6 +5,7 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
 {
   m_windowWidth = windowWidth;
   m_windowHeight = windowHeight;
+  m_dot.setScreenSize(windowWidth, windowHeight);
 
   // if (!m_backgroundTexture.loadFromFile(k_backgroundPath.data(), renderer))
   // {
@@ -38,6 +39,7 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
   {
   case InputType::Player:
     SDL_Log("Player input detected");
+    m_dot.handleEvent(event);
     break;
   case InputType::System:
     SDL_Log("System input detected");

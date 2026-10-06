@@ -2,21 +2,32 @@
 
 auto Dot::handleEvent(const SDL_Event &event) -> void
 {
+    const bool isKeyDown{event.type == SDL_EVENT_KEY_DOWN};
+    if (!isKeyDown && event.type != SDL_EVENT_KEY_UP) // if the event is neither a key down nor a key up event
+    {
+        return;
+    }
+
     switch (event.key.key)
     {
     case SDLK_UP:
-        mVelY -= kDotVelocity;
+        mMovingUp = isKeyDown;
         break;
     case SDLK_DOWN:
-        mVelY += kDotVelocity;
+        mMovingDown = isKeyDown;
         break;
     case SDLK_LEFT:
-        mVelX -= kDotVelocity;
+        mMovingLeft = isKeyDown;
         break;
     case SDLK_RIGHT:
-        mVelX += kDotVelocity;
+        mMovingRight = isKeyDown;
         break;
     }
+
+    mVelX = (static_cast<int>(mMovingRight) - static_cast<int>(mMovingLeft)) *
+            kDotVelocity;
+    mVelY = (static_cast<int>(mMovingDown) - static_cast<int>(mMovingUp)) *
+            kDotVelocity;
 }
 
 auto Dot::move() -> void
@@ -26,8 +37,6 @@ auto Dot::move() -> void
 
     mPosX = std::clamp(mPosX, 0, mScreenWidth - kDotWidth);
     mPosY = std::clamp(mPosY, 0, mScreenHeight - kDotHeight);
-
-    SDL_Log("Dot position: (%d, %d)", mPosX, mPosY);
 }
 
 auto Dot::render(SDL_Renderer *renderer) -> void

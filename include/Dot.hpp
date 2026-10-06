@@ -17,6 +17,11 @@ public:
     Dot(int w, int h) : mScreenWidth{w}, mScreenHeight{h} {}
 
     auto handleEvent(const SDL_Event &event) -> void;
+    auto setScreenSize(int w, int h) -> void
+    {
+        mScreenWidth = w;
+        mScreenHeight = h;
+    }
     auto move() -> void;
     auto loadTexture(SDL_Renderer *renderer) -> bool;
     auto render(SDL_Renderer *renderer) -> void;
@@ -27,6 +32,7 @@ private:
     int mPosX{250}, mPosY{250};
     int mVelX{}, mVelY{};
     int mScreenWidth{}, mScreenHeight{};
+    bool mMovingUp{}, mMovingDown{}, mMovingLeft{}, mMovingRight{};
 };
 
 #endif // DOT_HPP
