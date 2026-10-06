@@ -33,7 +33,7 @@ private:
   SDL_Window *m_window{};
   SDL_Renderer *m_renderer{};
   TTF_Font *m_font{};
-  DemoScene m_scene{[this]()
+  DemoScene m_scene{k_defaultWidth, k_defaultHeight, [this]()
                     { toggleSettings(); }};
 
   // framerate and vsync settings

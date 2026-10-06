@@ -10,6 +10,7 @@
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include "Texture.hpp"
+#include "Dot.hpp"
 
 // Throwaway SDL learning scaffolding; to be replaced by real Tetris scene
 // logic.
@@ -17,8 +18,8 @@ class DemoScene
 {
 public:
   DemoScene() = default;
-  explicit DemoScene(std::function<void()> debug_Callback)
-      : m_toggleDebugOverlay_Callback{std::move(debug_Callback)} {}
+  explicit DemoScene(int windowWidth, int windowHeight, std::function<void()> debug_Callback)
+      : m_windowWidth{windowWidth}, m_windowHeight{windowHeight}, m_toggleDebugOverlay_Callback{std::move(debug_Callback)} {}
 
   auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth,
                   int windowHeight) -> bool;
@@ -34,6 +35,7 @@ private:
   std::string m_text{"Press ~ to print debug stats"};
   int m_windowWidth{};
   int m_windowHeight{};
+  Dot m_dot{m_windowWidth, m_windowHeight};
   std::function<void()> m_toggleDebugOverlay_Callback{};
 
   enum class InputType

@@ -19,6 +19,12 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
     return false;
   }
 
+  if (!m_dot.loadTexture(renderer))
+  {
+    SDL_Log("Failed to load dot texture: %s", SDL_GetError());
+    return false;
+  }
+
   return true;
 }
 
@@ -51,4 +57,6 @@ auto DemoScene::render(SDL_Renderer *renderer) -> void
                            static_cast<float>(m_textTexture.getWidth()),
                            static_cast<float>(m_textTexture.getHeight())};
   m_textTexture.render(renderer, textRect);
+  m_dot.move();
+  m_dot.render(renderer);
 }
