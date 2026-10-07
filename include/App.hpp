@@ -11,8 +11,8 @@
 class App
 {
 public:
-  static constexpr int k_defaultWidth{500};
-  static constexpr int k_defaultHeight{500};
+  static constexpr int k_defaultWidth{1000};
+  static constexpr int k_defaultHeight{1000};
 
   // font
   static constexpr std::string_view k_fontPath{"assets/lazy.ttf"};

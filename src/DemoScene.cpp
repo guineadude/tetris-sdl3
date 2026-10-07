@@ -58,5 +58,6 @@ auto DemoScene::render(SDL_Renderer *renderer) -> void
                            static_cast<float>(m_textTexture.getHeight())};
   m_textTexture.render(renderer, textRect);
   m_dot.move();
+  m_dot.animate();
   m_dot.render(renderer);
 }

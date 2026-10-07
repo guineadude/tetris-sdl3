@@ -47,7 +47,7 @@ private:
   std::string m_text{"Press ~ to print debug stats"};
   int m_windowWidth{};
   int m_windowHeight{};
-  Dot m_dot{m_windowWidth, m_windowHeight, m_maxFPS};
+  Dot m_dot{m_windowWidth, m_windowHeight};
   std::function<void()> m_toggleDebugOverlay_Callback{};
   KeyEventMode m_playerKeyEvents{KeyEventMode::KeyDownAndUp};
   KeyEventMode m_systemKeyEvents{KeyEventMode::KeyDownOnly};

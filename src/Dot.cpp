@@ -37,8 +37,6 @@ auto Dot::move() -> void
 
     mPosX = std::clamp(mPosX, 0, mScreenWidth - kDotWidth);
     mPosY = std::clamp(mPosY, 0, mScreenHeight - kDotHeight);
-
-    animate();
 }
 
 auto Dot::render(SDL_Renderer *renderer) -> void
@@ -60,10 +58,32 @@ auto Dot::loadAssets(SDL_Renderer *renderer) -> bool
                                {64.f, 0.f, kAnimationClipWidth, kAnimationClipHeight},
                                {128.f, 0.f, kAnimationClipWidth, kAnimationClipHeight},
                                {192.f, 0.f, kAnimationClipWidth, kAnimationClipHeight}});
+    mDotTexture.repositionClip(mCurrentClip = Texture::Clip::First);
     return true;
 }
 
 auto Dot::animate() -> void
 {
-    static int currentClip{0};
+    const Uint64 currentTime{SDL_GetTicksNS()};
+
+    if (currentTime - mLastAnimationUpdate < kAnimationFrameDuration)
+    {
+        return;
+    }
+
+    mLastAnimationUpdate = currentTime;
+
+    const auto nextClip{
+        static_cast<std::size_t>(mCurrentClip) + 1};
+
+    if (nextClip >= static_cast<std::size_t>(Texture::Clip::Max))
+    {
+        mCurrentClip = Texture::Clip::First;
+    }
+    else
+    {
+        mCurrentClip = static_cast<Texture::Clip>(nextClip);
+    }
+
+    mDotTexture.repositionClip(mCurrentClip);
 }
