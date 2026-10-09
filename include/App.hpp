@@ -5,7 +5,6 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3_ttf/SDL_ttf.h>
-#include <SDL3_mixer/SDL_mixer.h>
 
 #include "DemoScene.hpp"
 
@@ -34,8 +33,6 @@ private:
   SDL_Window *m_window{};
   SDL_Renderer *m_renderer{};
   TTF_Font *m_font{};
-  MIX_Mixer *m_mixer{};
-  bool m_mixerInitialized{};
   DemoScene m_scene{k_defaultWidth, k_defaultHeight, m_maxFPS, [this]()
                     { toggleSettings(); }};
 
@@ -45,9 +42,6 @@ private:
   bool m_capFramerate{true};
   Uint64 m_tickCount{};
   Uint64 m_lastTickCount{};
-
-  MIX_Audio *m_audio{};
-  MIX_Track *m_track{};
 
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
   auto tick() -> void;
@@ -100,15 +94,6 @@ private:
     return true;
   }
 
-  auto initializeMixer() -> bool
-  {
-    if (m_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr); !m_mixer)
-    {
-      SDL_Log("Mixer initialization failed: %s", SDL_GetError());
-      return false;
-    }
-    return true;
-  }
 };
 
 #endif // APP_HPP

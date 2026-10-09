@@ -14,14 +14,14 @@ Build a "Nasty Tetris" style game while learning SDL3 fundamentals, including:
 ## Project Structure
 
 - `src/` — source files
-- `assets/` — images, fonts, sounds, and other game assets
+- `assets/` — images, fonts, and other game assets
 - `CMakeLists.txt` — CMake build configuration
 
 ## Build
 
-The project uses MinGW development packages for SDL3, SDL3_image, SDL3_ttf, and
-SDL3_mixer. Set `SDL3_ROOT`, `SDL3_IMAGE_ROOT`, `SDL3_TTF_ROOT`, and
-`SDL3_MIXER_ROOT` to each package's architecture-specific directory (the one
+The project uses MinGW development packages for SDL3, SDL3_image, and SDL3_ttf.
+Set `SDL3_ROOT`, `SDL3_IMAGE_ROOT`, and `SDL3_TTF_ROOT` to each package's
+architecture-specific directory (the one
 containing `include/`, `lib/`, and `bin/`). These paths can be set in the
 untracked `CMakeUserPresets.json` file or passed as CMake cache variables.
 

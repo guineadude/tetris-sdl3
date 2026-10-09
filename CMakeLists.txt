@@ -9,7 +9,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(SDL3_ROOT "" CACHE PATH "Root of the SDL3 mingw devel package (contains include/ and lib/)")
 set(SDL3_IMAGE_ROOT "" CACHE PATH "Root of the SDL3_image mingw devel package (contains include/ and lib/)")
 set(SDL3_TTF_ROOT "" CACHE PATH "Root of the SDL3_ttf mingw devel package (contains include/ and lib/)")
-set(SDL3_MIXER_ROOT "" CACHE PATH "Root of the SDL3_mixer mingw devel package (contains include/ and lib/)")
 
 if(NOT SDL3_ROOT)
     message(FATAL_ERROR "SDL3_ROOT is not set. Provide it via CMakeUserPresets.json or -DSDL3_ROOT=... (see README.md).")
@@ -20,10 +19,6 @@ endif()
 if(NOT SDL3_TTF_ROOT)
     message(FATAL_ERROR "SDL3_TTF_ROOT is not set. Provide it via CMakeUserPresets.json or -DSDL3_TTF_ROOT=... (see README.md).")
 endif()
-if(NOT SDL3_MIXER_ROOT)
-    message(FATAL_ERROR "SDL3_MIXER_ROOT is not set. Provide it via CMakeUserPresets.json or -DSDL3_MIXER_ROOT=... (see README.md).")
-endif()
-
 add_executable(tetris
     src/main.cpp
     src/App.cpp
@@ -37,7 +32,6 @@ target_include_directories(tetris PRIVATE
     "${SDL3_ROOT}/include"
     "${SDL3_IMAGE_ROOT}/include"
     "${SDL3_TTF_ROOT}/include"
-    "${SDL3_MIXER_ROOT}/include"
     "${CMAKE_SOURCE_DIR}/include"
 )
 
@@ -45,14 +39,12 @@ target_link_directories(tetris PRIVATE
     "${SDL3_ROOT}/lib"
     "${SDL3_IMAGE_ROOT}/lib"
     "${SDL3_TTF_ROOT}/lib"
-    "${SDL3_MIXER_ROOT}/lib"
 )
 
 target_link_libraries(tetris PRIVATE
     SDL3
     SDL3_image
     SDL3_ttf
-    SDL3_mixer
 )
 
 add_custom_command(TARGET tetris POST_BUILD
@@ -60,7 +52,6 @@ add_custom_command(TARGET tetris POST_BUILD
         "${SDL3_ROOT}/bin/SDL3.dll"
         "${SDL3_IMAGE_ROOT}/bin/SDL3_image.dll"
         "${SDL3_TTF_ROOT}/bin/SDL3_ttf.dll"
-        "${SDL3_MIXER_ROOT}/bin/SDL3_mixer.dll"
         "$<TARGET_FILE_DIR:tetris>"
     COMMENT "Copying SDL3 runtime DLLs next to the built executable"
 )

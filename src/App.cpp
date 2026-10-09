@@ -2,13 +2,6 @@
 
 App::~App()
 {
-  MIX_DestroyTrack(m_track);
-  MIX_DestroyAudio(m_audio);
-  MIX_DestroyMixer(m_mixer);
-  if (m_mixerInitialized)
-  {
-    MIX_Quit();
-  }
   if (m_font)
   {
     TTF_CloseFont(m_font);
@@ -21,7 +14,7 @@ App::~App()
 
 bool App::init()
 {
-  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
+  if (!SDL_Init(SDL_INIT_VIDEO))
   {
     SDL_Log("SDL_Init failed: %s", SDL_GetError());
     return false;
@@ -29,16 +22,6 @@ bool App::init()
   if (!TTF_Init())
   {
     SDL_Log("TTF_Init failed: %s", SDL_GetError());
-    return false;
-  }
-  if (!MIX_Init())
-  {
-    SDL_Log("MIX_Init failed: %s", SDL_GetError());
-    return false;
-  }
-  m_mixerInitialized = true;
-  if (!initializeMixer())
-  {
     return false;
   }
   if (!initializeWindow("Tetris"))
@@ -78,22 +61,6 @@ int App::run()
     SDL_Log("Failed to load scene assets: %s", SDL_GetError());
     return 2;
   }
-
-  if (m_audio = MIX_LoadAudio(m_mixer, "assets/low.wav", true); !m_audio)
-  {
-    SDL_Log("Failed to load audio: %s", SDL_GetError());
-    return 3;
-  }
-  if (m_track = MIX_CreateTrack(m_mixer); !m_track)
-  {
-    SDL_Log("Failed to create track: %s", SDL_GetError());
-    return 4;
-  }
-  SDL_PropertiesID propID = SDL_CreateProperties();
-  SDL_SetNumberProperty(propID, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
-  MIX_SetTrackAudio(m_track, m_audio);
-  MIX_PlayTrack(m_track, propID);
-  SDL_DestroyProperties(propID);
 
   while (exitCode == 0)
   {
