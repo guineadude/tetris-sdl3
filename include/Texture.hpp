@@ -14,10 +14,19 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 
-class Texture {
+class Texture
+{
 
 public:
-  enum class Clip : std::size_t { None, First, Second, Third, Fourth, Max };
+  enum class Clip : std::size_t
+  {
+    None,
+    First,
+    Second,
+    Third,
+    Fourth,
+    Max
+  };
 
 private:
   SDL_Texture *m_texture{};
@@ -42,14 +51,17 @@ public:
       : m_texture{other.m_texture}, m_filePath{other.m_filePath},
         m_colorKey{other.m_colorKey}, m_currentClip{other.m_currentClip},
         m_clipData{other.m_clipData}, m_width{other.m_width},
-        m_height{other.m_height} {
+        m_height{other.m_height}
+  {
     other.m_texture = nullptr;
     other.m_width = 0;
     other.m_height = 0;
   }
 
-  Texture &operator=(Texture &&other) noexcept {
-    if (this != &other) {
+  Texture &operator=(Texture &&other) noexcept
+  {
+    if (this != &other)
+    {
       destroy();
       m_texture = other.m_texture;
       m_filePath = other.m_filePath;

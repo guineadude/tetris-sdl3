@@ -47,7 +47,8 @@ private:
   std::string m_text{"Press ~ to print debug stats"};
   int m_windowWidth{};
   int m_windowHeight{};
-  Dot m_dot{m_windowWidth, m_windowHeight};
+  Dot m_redDot{m_windowWidth, m_windowHeight, 0, 0, true, std::string_view{"assets\\foo-sprites.png"}};
+  Dot m_blueDot{m_windowWidth, m_windowHeight, 250, 250, false, SDL_Color{0x00, 0x00, 0xFF, 0xFF}};
   std::function<void()> m_toggleDebugOverlay_Callback{};
   KeyEventMode m_playerKeyEvents{KeyEventMode::KeyDownAndUp};
   KeyEventMode m_systemKeyEvents{KeyEventMode::KeyDownOnly};

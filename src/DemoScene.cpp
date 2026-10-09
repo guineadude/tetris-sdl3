@@ -5,7 +5,8 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
 {
   m_windowWidth = windowWidth;
   m_windowHeight = windowHeight;
-  m_dot.setScreenSize(windowWidth, windowHeight);
+  m_redDot.setScreenSize(windowWidth, windowHeight);
+  m_blueDot.setScreenSize(windowWidth, windowHeight);
 
   // if (!m_backgroundTexture.loadFromFile(k_backgroundPath.data(), renderer))
   // {
@@ -20,9 +21,15 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
     return false;
   }
 
-  if (!m_dot.loadAssets(renderer))
+  if (!m_redDot.loadAssets(renderer))
   {
-    SDL_Log("Failed to load dot texture: %s", SDL_GetError());
+    SDL_Log("Failed to load red dot texture: %s", SDL_GetError());
+    return false;
+  }
+
+  if (!m_blueDot.loadAssets(renderer))
+  {
+    SDL_Log("Failed to load blue dot texture: %s", SDL_GetError());
     return false;
   }
 
@@ -38,7 +45,8 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
   switch (inputType)
   {
   case InputType::Player:
-    m_dot.handleEvent(event);
+    m_redDot.handleEvent(event);
+    m_blueDot.handleEvent(event);
     break;
   case InputType::System:
     m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_Log("Debug overlay callback nullptr");
@@ -57,7 +65,6 @@ auto DemoScene::render(SDL_Renderer *renderer) -> void
                            static_cast<float>(m_textTexture.getWidth()),
                            static_cast<float>(m_textTexture.getHeight())};
   m_textTexture.render(renderer, textRect);
-  m_dot.move();
-  m_dot.animate();
-  m_dot.render(renderer);
+  m_redDot.run(renderer);
+  m_blueDot.run(renderer);
 }

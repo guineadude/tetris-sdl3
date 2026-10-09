@@ -10,17 +10,25 @@
 class Dot
 {
 public:
-    static constexpr int kDotWidth{64};
-    static constexpr int kDotHeight{205};
-    static constexpr int kDotVelocity{10};
-    static constexpr int kAnimationClipCount{4};
-    static constexpr int kAnimationClipWidth{64};
-    static constexpr int kAnimationClipHeight{205};
+    const int kDotWidth{100};
+    const int kDotHeight{100};
+    const int kDotVelocity{10};
+    const int kAnimationClipCount{4};
+    const int kAnimationClipWidth{64};
+    const int kAnimationClipHeight{200};
     static constexpr Uint64 kAnimationFrameDuration{100'000'000}; // 100 ms
-    Dot(int w, int h) : mScreenWidth{w}, mScreenHeight{h}
+
+    explicit Dot(int w, int h, int startX, int startY, bool canMove, std::string_view texturePath) : mScreenWidth{w}, mScreenHeight{h}, mDotTexturePath{texturePath}, mCanMove{canMove}
     {
-        mPosX = mScreenWidth / 2;
-        mPosY = mScreenHeight / 2;
+        mPosX = startX;
+        mPosY = startY;
+        mHasTexture = true;
+    }
+    explicit Dot(int w, int h, int startX, int startY, bool canMove, SDL_Color color) : mScreenWidth{w}, mScreenHeight{h}, mDotColor{color}, mCanMove{canMove}
+    {
+        mPosX = startX;
+        mPosY = startY;
+        mHasTexture = false;
     }
 
     auto handleEvent(const SDL_Event &event) -> void;
@@ -29,20 +37,29 @@ public:
         mScreenWidth = w;
         mScreenHeight = h;
     }
-    auto move() -> void;
-    auto animate() -> void;
+
     auto loadAssets(SDL_Renderer *renderer) -> bool;
-    auto render(SDL_Renderer *renderer) -> void;
+    auto run(SDL_Renderer *renderer) -> void;
 
 private:
+    int mScreenWidth{}, mScreenHeight{};
+
     Texture mDotTexture{};
+    SDL_Color mDotColor{};
     std::string_view mDotTexturePath{"assets\\foo-sprites.png"};
+    bool mHasTexture{false};
+    bool mCanMove{true};
+
     int mPosX{}, mPosY{};
     int mVelX{}, mVelY{};
-    int mScreenWidth{}, mScreenHeight{};
+
     bool mMovingUp{}, mMovingDown{}, mMovingLeft{}, mMovingRight{};
     Texture::Clip mCurrentClip{Texture::Clip::None};
     Uint64 mLastAnimationUpdate{};
+
+    auto move() -> void;
+    auto animate() -> void;
+    auto render(SDL_Renderer *renderer) -> void;
 };
 
 #endif // DOT_HPP
