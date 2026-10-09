@@ -10,24 +10,34 @@
 class Dot
 {
 public:
-    const int kDotWidth{100};
-    const int kDotHeight{100};
-    const int kDotVelocity{10};
+    const float kDotWidth{100};
+    const float kDotHeight{100};
+    const float kDotVelocity{10};
+    const float kAnimationClipWidth{64};
+    const float kAnimationClipHeight{200};
     const int kAnimationClipCount{4};
-    const int kAnimationClipWidth{64};
-    const int kAnimationClipHeight{200};
     static constexpr Uint64 kAnimationFrameDuration{100'000'000}; // 100 ms
 
     explicit Dot(int w, int h, int startX, int startY, bool canMove, std::string_view texturePath) : mScreenWidth{w}, mScreenHeight{h}, mDotTexturePath{texturePath}, mCanMove{canMove}
     {
         mPosX = startX;
         mPosY = startY;
+        mCollider = SDL_FRect{
+            mPosX,
+            mPosY,
+            kDotWidth,
+            kDotHeight};
         mHasTexture = true;
     }
     explicit Dot(int w, int h, int startX, int startY, bool canMove, SDL_Color color) : mScreenWidth{w}, mScreenHeight{h}, mDotColor{color}, mCanMove{canMove}
     {
         mPosX = startX;
         mPosY = startY;
+        mCollider = SDL_FRect{
+            mPosX,
+            mPosY,
+            kDotWidth,
+            kDotHeight};
         mHasTexture = false;
     }
 
@@ -52,6 +62,7 @@ private:
 
     int mPosX{}, mPosY{};
     int mVelX{}, mVelY{};
+    SDL_FRect mCollider{};
 
     bool mMovingUp{}, mMovingDown{}, mMovingLeft{}, mMovingRight{};
     Texture::Clip mCurrentClip{Texture::Clip::None};

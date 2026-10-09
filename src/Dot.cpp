@@ -35,8 +35,8 @@ auto Dot::move() -> void
     mPosX += mVelX;
     mPosY += mVelY;
 
-    mPosX = std::clamp(mPosX, 0, mScreenWidth - kDotWidth);
-    mPosY = std::clamp(mPosY, 0, mScreenHeight - kDotHeight);
+    mPosX = std::clamp(mPosX, 0, mScreenWidth - static_cast<int>(kDotWidth));
+    mPosY = std::clamp(mPosY, 0, mScreenHeight - static_cast<int>(kDotHeight));
 }
 
 auto Dot::run(SDL_Renderer *renderer) -> void
@@ -58,12 +58,13 @@ auto Dot::render(SDL_Renderer *renderer) -> void
 {
     if (mHasTexture)
     {
-        mDotTexture.render(renderer,
-                           SDL_FRect{
-                               static_cast<float>(mPosX),
-                               static_cast<float>(mPosY),
-                               static_cast<float>(kDotWidth),
-                               static_cast<float>(kDotHeight)});
+        mDotTexture.render(
+        renderer,
+        SDL_FRect{
+            mPosX,
+            mPosY,
+            kDotWidth,
+            kDotHeight});
     }
     else
     {
@@ -75,10 +76,11 @@ auto Dot::render(SDL_Renderer *renderer) -> void
             mDotColor.a);
 
         SDL_FRect destination{
-            static_cast<float>(mPosX),
-            static_cast<float>(mPosY),
-            static_cast<float>(kDotWidth),
-            static_cast<float>(kDotHeight)};
+            mPosX,
+            mPosY,
+            kDotWidth,
+            kDotHeight};
+            
         SDL_RenderFillRect(renderer, &destination);
     }
 }
@@ -91,10 +93,13 @@ auto Dot::loadAssets(SDL_Renderer *renderer) -> bool
         {
             return false;
         }
-        mDotTexture.populateClips({{0.f, 0.f, static_cast<float>(kAnimationClipWidth), static_cast<float>(kAnimationClipHeight)},
-                                   {64.f, 0.f, static_cast<float>(kAnimationClipWidth), static_cast<float>(kAnimationClipHeight)},
-                                   {128.f, 0.f, static_cast<float>(kAnimationClipWidth), static_cast<float>(kAnimationClipHeight)},
-                                   {192.f, 0.f, static_cast<float>(kAnimationClipWidth), static_cast<float>(kAnimationClipHeight)}});
+        mDotTexture.populateClips({
+            {0.f, 0.f, kAnimationClipWidth, kAnimationClipHeight},
+            {64.f, 0.f, kAnimationClipWidth, kAnimationClipHeight},
+            {128.f, 0.f, kAnimationClipWidth, kAnimationClipHeight},
+            {192.f, 0.f, kAnimationClipWidth, kAnimationClipHeight}}
+        );
+        
         mDotTexture.repositionClip(mCurrentClip = Texture::Clip::First);
         return true;
     }
