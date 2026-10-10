@@ -37,6 +37,13 @@ auto Dot::move() -> void
 
     mPosX = std::clamp(mPosX, 0, mScreenWidth - static_cast<int>(kDotWidth));
     mPosY = std::clamp(mPosY, 0, mScreenHeight - static_cast<int>(kDotHeight));
+
+    mCollider = {
+        mPosX,
+        mPosY,
+        kDotWidth,
+        kDotHeight
+    };
 }
 
 auto Dot::run(SDL_Renderer *renderer) -> void
