@@ -10,26 +10,26 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
 
   // if (!m_backgroundTexture.loadFromFile(k_backgroundPath.data(), renderer))
   // {
-  //   SDL_Log("Failed to load image: %s", SDL_GetError());
+  //   SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to load image: %s", SDL_GetError());
   //   return false;
   // }
 
   if (!m_textTexture.loadFromRenderedText(m_text, k_defaultFontColor, font,
                                           renderer))
   {
-    SDL_Log("Failed to create text texture: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to create text texture: %s", SDL_GetError());
     return false;
   }
 
   if (!m_redDot.loadAssets(renderer))
   {
-    SDL_Log("Failed to load red dot texture: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to load red dot texture: %s", SDL_GetError());
     return false;
   }
 
   if (!m_blueDot.loadAssets(renderer))
   {
-    SDL_Log("Failed to load blue dot texture: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to load blue dot texture: %s", SDL_GetError());
     return false;
   }
 
@@ -52,7 +52,7 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
     m_blueDot.handleEvent(event);
     break;
   case InputType::System:
-    m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_Log("Debug overlay callback nullptr");
+    m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Debug overlay callback nullptr");
     break;
   }
 }

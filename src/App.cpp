@@ -16,32 +16,32 @@ bool App::init()
 {
   if (!SDL_Init(SDL_INIT_VIDEO))
   {
-    SDL_Log("SDL_Init failed: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init failed: %s", SDL_GetError());
     return false;
   }
   if (!TTF_Init())
   {
-    SDL_Log("TTF_Init failed: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "TTF_Init failed: %s", SDL_GetError());
     return false;
   }
   if (!initializeWindow("Tetris"))
   {
-    SDL_Log("Window initialization failed: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
     return false;
   }
   if (!initializeRenderer())
   {
-    SDL_Log("Renderer initialization failed: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
     return false;
   }
   if (!initializeFont())
   {
-    SDL_Log("Font initialization failed: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Font initialization failed: %s", SDL_GetError());
     return false;
   }
   if (!SDL_SetRenderVSync(m_renderer, 1))
   {
-    SDL_Log("Failed to set VSync: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to set VSync: %s", SDL_GetError());
     return false;
   }
 
@@ -58,7 +58,7 @@ int App::run()
   if (!m_scene.loadAssets(m_renderer, m_font, k_defaultWidth,
                           k_defaultHeight))
   {
-    SDL_Log("Failed to load scene assets: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to load scene assets: %s", SDL_GetError());
     return 2;
   }
 

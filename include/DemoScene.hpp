@@ -49,6 +49,7 @@ private:
   int m_windowWidth{};
   int m_windowHeight{};
   const int m_maxFPS{};
+  bool m_CollisionDetected{false};
 
   Dot m_redDot{m_windowWidth, m_windowHeight, 0, 0, true, std::string_view{"assets\\foo-sprites.png"}};
   Dot m_blueDot{m_windowWidth, m_windowHeight, 250, 250, false, SDL_Color{0x00, 0x00, 0xFF, 0xFF}};
@@ -110,7 +111,21 @@ private:
                       m_dots[i]->getBounds(),
                       m_dots[j]->getBounds()))
               {
-                  SDL_Log("Collision detected between dot %zu and dot %zu", i, j);
+                //debug message
+                if (!m_CollisionDetected)
+                {
+                  SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Collision detected between dot %zu and dot %zu", i, j);
+                }
+                m_CollisionDetected = true;
+              }
+              else
+              {
+                //debug message
+                if (m_CollisionDetected)
+                {
+                  SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "No collision detected");
+                }
+                m_CollisionDetected = false;
               }
           }
       }

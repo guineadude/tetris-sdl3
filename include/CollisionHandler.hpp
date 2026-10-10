@@ -1,8 +1,6 @@
 #ifndef COLLISION_HANDLER_HPP
 #define COLLISION_HANDLER_HPP
 
-#include <array>
-
 #include <SDL3/SDL.h>
 
 namespace CollisionHandler {

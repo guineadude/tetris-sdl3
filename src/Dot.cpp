@@ -64,8 +64,8 @@ auto Dot::render(SDL_Renderer *renderer) -> void
         mDotTexture.render(
         renderer,
         SDL_FRect{
-            mPosX,
-            mPosY,
+            static_cast<float>(mPosX),
+            static_cast<float>(mPosY),
             kDotWidth,
             kDotHeight});
     }
@@ -79,8 +79,8 @@ auto Dot::render(SDL_Renderer *renderer) -> void
             mDotColor.a);
 
         SDL_FRect destination{
-            mPosX,
-            mPosY,
+            static_cast<float>(mPosX),
+            static_cast<float>(mPosY),
             kDotWidth,
             kDotHeight};
             

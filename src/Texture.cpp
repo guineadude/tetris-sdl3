@@ -7,7 +7,7 @@ bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer) {
 
   SDL_Surface *surface{IMG_Load(path.data())};
   if (!surface) {
-    SDL_Log("Failed to load texture from file: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to load texture from file: %s", SDL_GetError());
     return false;
   }
 
@@ -16,14 +16,14 @@ bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer) {
                                 SDL_MapSurfaceRGB(surface, m_colorKey->r,
                                                   m_colorKey->g,
                                                   m_colorKey->b))) {
-      SDL_Log("Failed to set color key: %s", SDL_GetError());
+      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to set color key: %s", SDL_GetError());
     }
   }
 
   m_texture = SDL_CreateTextureFromSurface(renderer, surface);
 
   if (!m_texture) {
-    SDL_Log("Failed to create texture: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to create texture: %s", SDL_GetError());
     SDL_DestroySurface(surface);
     return false;
   }
@@ -44,14 +44,14 @@ bool Texture::loadFromRenderedText(std::string_view text, SDL_Color color,
       TTF_RenderText_Blended_Wrapped(font, text.data(), 0, color, 0)};
 
   if (!textSurface) {
-    SDL_Log("Unable to render text: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Unable to render text: %s", SDL_GetError());
     return false;
   }
 
   m_texture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
   if (!m_texture) {
-    SDL_Log("Unable to create texture from rendered text: %s", SDL_GetError());
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Unable to create texture from rendered text: %s", SDL_GetError());
     SDL_DestroySurface(textSurface);
     return false;
   }

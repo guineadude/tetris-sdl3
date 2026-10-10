@@ -51,9 +51,10 @@ private:
   {
     toggleVsync();
     toggleFramerateCap();
-    SDL_Log("Toggling settings: VSync is now %s, Framerate cap is now %s",
-            m_vsyncEnabled ? "enabled" : "disabled",
-            m_capFramerate ? "capped" : "uncapped");
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
+                 "Toggling settings: VSync is now %s, Framerate cap is now %s",
+                 m_vsyncEnabled ? "enabled" : "disabled",
+                 m_capFramerate ? "capped" : "uncapped");
   }
   auto toggleVsync() -> void
   {
@@ -69,7 +70,7 @@ private:
   {
     if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window)
     {
-      SDL_Log("Window initialization failed: %s", SDL_GetError());
+      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
       return false;
     }
     return true;
@@ -78,7 +79,7 @@ private:
   {
     if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer)
     {
-      SDL_Log("Renderer initialization failed: %s", SDL_GetError());
+      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
       return false;
     }
     return true;
@@ -88,7 +89,7 @@ private:
   {
     if (m_font = TTF_OpenFont(path.data(), fontSize); !m_font)
     {
-      SDL_Log("Font initialization failed: %s", SDL_GetError());
+      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Font initialization failed: %s", SDL_GetError());
       return false;
     }
     return true;
