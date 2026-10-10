@@ -1,6 +1,7 @@
 #ifndef DEMO_SCENE_HPP
 #define DEMO_SCENE_HPP
 
+#include <vector>
 #include <string>
 #include <string_view>
 #include <functional>
@@ -11,6 +12,7 @@
 
 #include "Texture.hpp"
 #include "Dot.hpp"
+#include "CollisionHandler.hpp"
 
 // Throwaway SDL learning scaffolding; to be replaced by real Tetris scene
 // logic.
@@ -28,13 +30,12 @@ public:
                      std::function<void()> debug_Callback,
                      KeyEventMode playerKeyEvents = KeyEventMode::KeyDownAndUp,
                      KeyEventMode systemKeyEvents = KeyEventMode::KeyDownOnly)
-      : m_windowWidth{windowWidth}, m_windowHeight{windowHeight},
-        m_maxFPS{maxFPS},
-        m_toggleDebugOverlay_Callback{std::move(debug_Callback)},
-        m_playerKeyEvents{playerKeyEvents}, m_systemKeyEvents{systemKeyEvents} {}
+                    : m_windowWidth{windowWidth}, m_windowHeight{windowHeight},
+                      m_maxFPS{maxFPS},
+                      m_toggleDebugOverlay_Callback{std::move(debug_Callback)},
+                      m_playerKeyEvents{playerKeyEvents}, m_systemKeyEvents{systemKeyEvents} {}
 
-  auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth,
-                  int windowHeight) -> bool;
+  auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth, int windowHeight) -> bool;
   auto handleEvent(const SDL_Event &event, int &exitCode) -> void;
   auto render(SDL_Renderer *renderer) -> void;
 
@@ -44,15 +45,20 @@ private:
 
   Texture m_backgroundTexture{};
   Texture m_textTexture{};
-  std::string m_text{"Press ~ to print debug stats"};
+
   int m_windowWidth{};
   int m_windowHeight{};
+  const int m_maxFPS{};
+
   Dot m_redDot{m_windowWidth, m_windowHeight, 0, 0, true, std::string_view{"assets\\foo-sprites.png"}};
   Dot m_blueDot{m_windowWidth, m_windowHeight, 250, 250, false, SDL_Color{0x00, 0x00, 0xFF, 0xFF}};
-  std::function<void()> m_toggleDebugOverlay_Callback{};
+
   KeyEventMode m_playerKeyEvents{KeyEventMode::KeyDownAndUp};
   KeyEventMode m_systemKeyEvents{KeyEventMode::KeyDownOnly};
-  const int m_maxFPS{};
+
+  std::function<void()> m_toggleDebugOverlay_Callback{};
+  std::string m_text{"Press ~ to print debug stats"};
+  std::vector<Dot *> m_dots{};
 
   enum class InputType
   {
@@ -94,6 +100,29 @@ private:
 
     return inputType;
   }
+  auto checkCollisions() -> void
+  {
+      for (std::size_t i{}; i < m_dots.size(); ++i)
+      {
+          for (std::size_t j{i + 1}; j < m_dots.size(); ++j)
+          {
+              if (CollisionHandler::checkAABB(
+                      m_dots[i]->getBounds(),
+                      m_dots[j]->getBounds()))
+              {
+                  SDL_Log("Collision detected between dot %zu and dot %zu", i, j);
+              }
+          }
+      }
+  }
+  auto forEachObj(std::function<void(Dot&)> callback) -> void
+  {
+    for (auto *dot : m_dots)
+    {
+      callback(*dot);
+    }
+  }
+
 };
 
 #endif // DEMO_SCENE_HPP
