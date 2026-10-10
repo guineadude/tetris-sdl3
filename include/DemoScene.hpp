@@ -51,8 +51,8 @@ private:
   const int m_maxFPS{};
   bool m_CollisionDetected{false};
 
-  Dot m_redDot{m_windowWidth, m_windowHeight, 0, 0, true, std::string_view{"assets\\foo-sprites.png"}};
-  Dot m_blueDot{m_windowWidth, m_windowHeight, 250, 250, false, SDL_Color{0x00, 0x00, 0xFF, 0xFF}};
+  // Dot m_redDot{m_windowWidth, m_windowHeight, 0, 0, true, std::string_view{"assets\\foo-sprites.png"}};
+  // Dot m_blueDot{m_windowWidth, m_windowHeight, 250, 250, false, SDL_Color{0x00, 0x00, 0xFF, 0xFF}};
 
   KeyEventMode m_playerKeyEvents{KeyEventMode::KeyDownAndUp};
   KeyEventMode m_systemKeyEvents{KeyEventMode::KeyDownOnly};
