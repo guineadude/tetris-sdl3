@@ -23,8 +23,8 @@ public:
         mPosX = startX;
         mPosY = startY;
         mCollider = SDL_FRect{
-            mPosX,
-            mPosY,
+            static_cast<float>(mPosX),
+            static_cast<float>(mPosY),
             kDotWidth,
             kDotHeight};
         mHasTexture = true;
@@ -34,8 +34,8 @@ public:
         mPosX = startX;
         mPosY = startY;
         mCollider = SDL_FRect{
-            mPosX,
-            mPosY,
+            static_cast<float>(mPosX),
+            static_cast<float>(mPosY),
             kDotWidth,
             kDotHeight};
         mHasTexture = false;
@@ -50,6 +50,7 @@ public:
 
     auto loadAssets(SDL_Renderer *renderer) -> bool;
     auto run(SDL_Renderer *renderer) -> void;
+    auto getBounds() const -> SDL_FRect { return mCollider; }
 
 private:
     int mScreenWidth{}, mScreenHeight{};

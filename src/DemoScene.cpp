@@ -33,6 +33,9 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
     return false;
   }
 
+  m_dots.push_back(&m_redDot);
+  m_dots.push_back(&m_blueDot);
+
   return true;
 }
 
@@ -65,6 +68,11 @@ auto DemoScene::render(SDL_Renderer *renderer) -> void
                            static_cast<float>(m_textTexture.getWidth()),
                            static_cast<float>(m_textTexture.getHeight())};
   m_textTexture.render(renderer, textRect);
-  m_redDot.run(renderer);
-  m_blueDot.run(renderer);
+
+  forEachObj([renderer](Dot &dot) {
+    dot.run(renderer);
+  });
+
+  checkCollisions();
 }
+
