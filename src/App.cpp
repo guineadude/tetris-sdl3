@@ -12,6 +12,57 @@ App::~App()
   SDL_Quit();
 }
 
+auto App::toggleSettings() -> void
+{
+  toggleVsync();
+  toggleFramerateCap();
+  SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
+               "Toggling settings: VSync is now %s, Framerate cap is now %s",
+               m_vsyncEnabled ? "enabled" : "disabled",
+               m_capFramerate ? "capped" : "uncapped");
+}
+
+auto App::toggleVsync() -> void
+{
+  m_vsyncEnabled = !m_vsyncEnabled;
+  SDL_SetRenderVSync(m_renderer, m_vsyncEnabled);
+}
+
+auto App::toggleFramerateCap() -> void
+{
+  m_capFramerate = !m_capFramerate;
+}
+
+auto App::initializeWindow(std::string_view name, int width, int height) -> bool
+{
+  if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window)
+  {
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
+    return false;
+  }
+  return true;
+}
+
+auto App::initializeRenderer() -> bool
+{
+  if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer)
+  {
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
+    return false;
+  }
+  return true;
+}
+
+auto App::initializeFont(std::string_view path, int fontSize) -> bool
+{
+  if (m_font = TTF_OpenFont(path.data(), fontSize); !m_font)
+  {
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Font initialization failed: %s", SDL_GetError());
+    return false;
+  }
+  return true;
+}
+
 bool App::init()
 {
   if (!SDL_Init(SDL_INIT_VIDEO))

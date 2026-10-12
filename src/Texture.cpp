@@ -2,6 +2,42 @@
 
 #include <string>
 
+Texture::Texture(std::optional<SDL_Color> colorKey)
+    : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{} {}
+
+Texture::~Texture() { destroy(); }
+
+Texture::Texture(Texture &&other) noexcept
+    : m_texture{other.m_texture}, m_filePath{other.m_filePath},
+      m_colorKey{other.m_colorKey}, m_currentClip{other.m_currentClip},
+      m_clipData{other.m_clipData}, m_width{other.m_width},
+      m_height{other.m_height}
+{
+  other.m_texture = nullptr;
+  other.m_width = 0;
+  other.m_height = 0;
+}
+
+Texture &Texture::operator=(Texture &&other) noexcept
+{
+  if (this != &other)
+  {
+    destroy();
+    m_texture = other.m_texture;
+    m_filePath = other.m_filePath;
+    m_colorKey = other.m_colorKey;
+    m_currentClip = other.m_currentClip;
+    m_clipData = other.m_clipData;
+    m_width = other.m_width;
+    m_height = other.m_height;
+
+    other.m_texture = nullptr;
+    other.m_width = 0;
+    other.m_height = 0;
+  }
+  return *this;
+}
+
 bool Texture::loadFromFile(std::string_view path, SDL_Renderer *renderer) {
   destroy();
 

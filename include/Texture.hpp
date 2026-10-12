@@ -42,41 +42,10 @@ private:
 
 public:
   // constructor, destructor and move semantics.
-  Texture(std::optional<SDL_Color> colorKey = std::nullopt)
-      : m_texture{}, m_colorKey{colorKey}, m_width{}, m_height{} {}
-
-  ~Texture() { destroy(); }
-
-  Texture(Texture &&other) noexcept
-      : m_texture{other.m_texture}, m_filePath{other.m_filePath},
-        m_colorKey{other.m_colorKey}, m_currentClip{other.m_currentClip},
-        m_clipData{other.m_clipData}, m_width{other.m_width},
-        m_height{other.m_height}
-  {
-    other.m_texture = nullptr;
-    other.m_width = 0;
-    other.m_height = 0;
-  }
-
-  Texture &operator=(Texture &&other) noexcept
-  {
-    if (this != &other)
-    {
-      destroy();
-      m_texture = other.m_texture;
-      m_filePath = other.m_filePath;
-      m_colorKey = other.m_colorKey;
-      m_currentClip = other.m_currentClip;
-      m_clipData = other.m_clipData;
-      m_width = other.m_width;
-      m_height = other.m_height;
-
-      other.m_texture = nullptr;
-      other.m_width = 0;
-      other.m_height = 0;
-    }
-    return *this;
-  }
+  Texture(std::optional<SDL_Color> colorKey = std::nullopt);
+  ~Texture();
+  Texture(Texture &&other) noexcept;
+  Texture &operator=(Texture &&other) noexcept;
 
   // non-copyable semantics (deleted copy constructor and copy assignment
   // operator)

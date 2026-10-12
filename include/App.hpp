@@ -33,68 +33,27 @@ private:
   SDL_Window *m_window{};
   SDL_Renderer *m_renderer{};
   TTF_Font *m_font{};
-  DemoScene m_scene{k_defaultWidth, k_defaultHeight, m_maxFPS, [this]()
-                    { toggleSettings(); }};
 
   // framerate and vsync settings
   int m_maxFPS{60};
   bool m_vsyncEnabled{true};
   bool m_capFramerate{true};
-  Uint64 m_tickCount{};
   Uint64 m_lastTickCount{};
+  DemoScene m_scene{k_defaultWidth, k_defaultHeight,
+                    [this]() { toggleSettings(); }};
 
   auto handleEvents(SDL_Event *event, int &exitCode) -> void;
   auto tick() -> void;
   auto render() -> void;
 
-  auto toggleSettings() -> void
-  {
-    toggleVsync();
-    toggleFramerateCap();
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
-                 "Toggling settings: VSync is now %s, Framerate cap is now %s",
-                 m_vsyncEnabled ? "enabled" : "disabled",
-                 m_capFramerate ? "capped" : "uncapped");
-  }
-  auto toggleVsync() -> void
-  {
-    m_vsyncEnabled = !m_vsyncEnabled;
-    SDL_SetRenderVSync(m_renderer, m_vsyncEnabled ? true : false);
-  }
-  auto toggleFramerateCap() -> void
-  {
-    m_capFramerate = !m_capFramerate;
-  };
+  auto toggleSettings() -> void;
+  auto toggleVsync() -> void;
+  auto toggleFramerateCap() -> void;
   auto initializeWindow(std::string_view name, int width = k_defaultWidth,
-                        int height = k_defaultHeight) -> bool
-  {
-    if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window)
-    {
-      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
-      return false;
-    }
-    return true;
-  }
-  auto initializeRenderer() -> bool
-  {
-    if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer)
-    {
-      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
-      return false;
-    }
-    return true;
-  }
+                        int height = k_defaultHeight) -> bool;
+  auto initializeRenderer() -> bool;
   auto initializeFont(std::string_view path = k_fontPath,
-                      int fontSize = k_fontSize) -> bool
-  {
-    if (m_font = TTF_OpenFont(path.data(), fontSize); !m_font)
-    {
-      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Font initialization failed: %s", SDL_GetError());
-      return false;
-    }
-    return true;
-  }
-
+                      int fontSize = k_fontSize) -> bool;
 };
 
 #endif // APP_HPP
