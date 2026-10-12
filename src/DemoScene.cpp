@@ -88,4 +88,9 @@ auto DemoScene::render(SDL_Renderer *renderer) -> void
                            static_cast<float>(m_textTexture.getWidth()),
                            static_cast<float>(m_textTexture.getHeight())};
   m_textTexture.render(renderer, textRect);
+
+  if(m_renderUserInput)
+  {
+    
+  }
 }

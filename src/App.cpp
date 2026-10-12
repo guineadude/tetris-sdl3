@@ -95,6 +95,7 @@ bool App::init()
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to set VSync: %s", SDL_GetError());
     return false;
   }
+  SDL_StartTextInput(m_window);
   SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
   return true;
@@ -128,7 +129,7 @@ void App::render()
   // updating settings
   tick();
 
-  // rendering
+  // rendering 
   SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
   SDL_RenderClear(m_renderer);
   m_scene.render(m_renderer);
@@ -151,6 +152,10 @@ void App::handleEvents(SDL_Event *event, int &exitCode)
         exitCode = -1;
         break;
       }
+    }
+    if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN || event->type == SDL_EVENT_MOUSE_BUTTON_UP)
+    {
+     
     }
 
     m_scene.handleEvent(*event, exitCode);
