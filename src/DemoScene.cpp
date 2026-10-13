@@ -28,55 +28,68 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
   return true;
 }
 
-auto DemoScene::getInputType(const SDL_Event &event) const -> InputType
+auto DemoScene::getInputAction(const SDL_Event &event) const -> InputAction
 {
-  if (event.type != SDL_EVENT_KEY_DOWN && event.type != SDL_EVENT_KEY_UP)
+  if (event.type == SDL_EVENT_TEXT_INPUT)
   {
-    return InputType::Unmapped;
+    return m_renderUserInput ? InputAction::TextInput : InputAction::Unmapped;
   }
 
-  InputType inputType{InputType::Unmapped};
+  if (event.type != SDL_EVENT_KEY_DOWN && event.type != SDL_EVENT_KEY_UP)
+  {
+    return InputAction::Unmapped;
+  }
+
+  InputAction inputAction{InputAction::Unmapped};
   switch (event.key.key)
   {
   case SDLK_GRAVE:
-    inputType = InputType::System;
+    inputAction = InputAction::ToggleDebugOverlay;
+    break;
+  case SDLK_RETURN:
+    inputAction = InputAction::ToggleTextEntry;
     break;
   case SDLK_UP:
   case SDLK_DOWN:
   case SDLK_LEFT:
   case SDLK_RIGHT:
-    inputType = InputType::Player;
+    inputAction = InputAction::Player;
     break;
   default:
-    return InputType::Unmapped;
+    return InputAction::Unmapped;
   }
 
-  const KeyEventMode eventMode{inputType == InputType::Player
+  const KeyEventMode eventMode{inputAction == InputAction::Player
                                    ? m_playerKeyEvents
                                    : m_systemKeyEvents};
-  if (event.type == SDL_EVENT_KEY_UP &&
-      eventMode == KeyEventMode::KeyDownOnly)
+
+  if (event.type == SDL_EVENT_KEY_UP && eventMode == KeyEventMode::KeyDownOnly)
   {
-    return InputType::Unmapped;
+    return InputAction::Unmapped;
   }
 
-  return inputType;
+  return inputAction;
 }
 
 auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
 {
   (void)exitCode;
 
-  auto inputType{getInputType(event)};
+  const InputAction inputAction{getInputAction(event)};
 
-  switch (inputType)
+  switch (inputAction)
   {
-  case InputType::Player:
+  case InputAction::Player:
     break;
-  case InputType::System:
+  case InputAction::ToggleDebugOverlay:
     m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Debug overlay callback nullptr");
     break;
-  case InputType::Unmapped:
+  case InputAction::ToggleTextEntry:
+    m_renderUserInput = !m_renderUserInput;
+    break;
+  case InputAction::TextInput:
+    break;
+  case InputAction::Unmapped:
     break;
   }
 }

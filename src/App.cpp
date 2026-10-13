@@ -153,10 +153,6 @@ void App::handleEvents(SDL_Event *event, int &exitCode)
         break;
       }
     }
-    if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN || event->type == SDL_EVENT_MOUSE_BUTTON_UP)
-    {
-     
-    }
 
     m_scene.handleEvent(*event, exitCode);
   }
