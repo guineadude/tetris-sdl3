@@ -25,6 +25,13 @@ auto DemoScene::loadAssets(SDL_Renderer *renderer, TTF_Font *font,
     return false;
   }
 
+  if (!m_userInputTexture.loadFromRenderedText(m_inputText, k_defaultFontColor, font,
+                                               renderer))
+  {
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to create user input texture: %s", SDL_GetError());
+    return false;
+  }
+
   return true;
 }
 
@@ -49,6 +56,9 @@ auto DemoScene::getInputAction(const SDL_Event &event) const -> InputAction
   case SDLK_RETURN:
     inputAction = InputAction::ToggleTextEntry;
     break;
+  case SDLK_BACKSPACE:
+    inputAction = InputAction::Backspace;
+    break;
   case SDLK_UP:
   case SDLK_DOWN:
   case SDLK_LEFT:
@@ -71,7 +81,7 @@ auto DemoScene::getInputAction(const SDL_Event &event) const -> InputAction
   return inputAction;
 }
 
-auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
+auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode, TTF_Font *font, SDL_Renderer *renderer) -> void
 {
   (void)exitCode;
 
@@ -80,14 +90,19 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
   switch (inputAction)
   {
   case InputAction::Player:
+    handlePlayerInput(event);
     break;
   case InputAction::ToggleDebugOverlay:
-    m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Debug overlay callback nullptr");
+    handleDebugOverlayToggle(event);
     break;
   case InputAction::ToggleTextEntry:
-    m_renderUserInput = !m_renderUserInput;
+    setIsEnteringText(!getIsEnteringText());
     break;
   case InputAction::TextInput:
+    handleTextInput(event, font, renderer, false);
+    break;
+  case InputAction::Backspace:
+    handleTextInput(event, font, renderer, true);
     break;
   case InputAction::Unmapped:
     break;
@@ -96,14 +111,49 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode) -> void
 
 auto DemoScene::render(SDL_Renderer *renderer) -> void
 {
-  const SDL_FRect textRect{(m_windowWidth - m_textTexture.getWidth()) * 0.5f,
+  const SDL_FRect title_TextRect{(m_windowWidth - m_textTexture.getWidth()) * 0.5f,
                            (m_windowHeight - m_textTexture.getHeight()) * 0.25f,
                            static_cast<float>(m_textTexture.getWidth()),
                            static_cast<float>(m_textTexture.getHeight())};
-  m_textTexture.render(renderer, textRect);
+  m_textTexture.render(renderer, title_TextRect);
 
   if(m_renderUserInput)
   {
-    
+    const SDL_FRect user_TextRect{(m_windowWidth - m_textTexture.getWidth()) * 0.5f,
+                          (m_windowHeight - m_textTexture.getHeight()) * 0.75f,
+                          static_cast<float>(m_textTexture.getWidth()),
+                          static_cast<float>(m_textTexture.getHeight())};
+                        
+    m_userInputTexture.render(renderer, user_TextRect);
+
+  }
+}
+
+auto DemoScene::handlePlayerInput(const SDL_Event &event) -> void
+{
+  //to enter
+}
+
+auto DemoScene::handleDebugOverlayToggle(const SDL_Event &event) -> void
+{
+    m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Debug overlay callback nullptr");
+}
+
+auto DemoScene::handleTextInput(const SDL_Event &event, TTF_Font *font, SDL_Renderer *renderer, bool isBackspace) -> void
+{
+  if (isBackspace && !m_inputText.empty())
+  {
+    m_inputText.pop_back();
+  }
+  else
+  {
+    m_inputText.append(event.text.text);
+  }
+
+  if (!m_userInputTexture.loadFromRenderedText(
+          m_inputText, k_defaultFontColor, font, renderer))
+  {
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
+                 "Failed to update input text texture: %s", SDL_GetError());
   }
 }

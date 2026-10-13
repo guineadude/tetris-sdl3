@@ -27,15 +27,17 @@ public:
                      KeyEventMode systemKeyEvents = KeyEventMode::KeyDownOnly);
 
   auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth, int windowHeight) -> bool;
-  auto handleEvent(const SDL_Event &event, int &exitCode) -> void;
+  auto handleEvent(const SDL_Event &event, int &exitCode, TTF_Font *font, SDL_Renderer *renderer) -> void;
   auto render(SDL_Renderer *renderer) -> void;
 
   auto getIsEnteringText() const -> bool { return m_renderUserInput; }
+  auto setIsEnteringText(bool isEnteringText) -> void { m_renderUserInput = isEnteringText; }
 
 private:
   static constexpr SDL_Color k_defaultFontColor{0x00, 0x00, 0xFF, 0xFF};
 
   Texture m_textTexture{};
+  Texture m_userInputTexture{};
 
   int m_windowWidth{};
   int m_windowHeight{};
@@ -45,7 +47,7 @@ private:
 
   std::function<void()> m_toggleDebugOverlay_Callback{};
   const std::string m_text{"Enter text:"};
-  std::string m_inputText{};
+  std::string m_inputText{"Placeholder"};
 
   bool m_renderUserInput{false};
 
@@ -55,9 +57,16 @@ private:
     Player,
     ToggleDebugOverlay,
     ToggleTextEntry,
+    Backspace,
     TextInput
   };
   auto getInputAction(const SDL_Event &event) const -> InputAction;
+
+  //input handling functions
+  auto handlePlayerInput(const SDL_Event &event) -> void;
+  auto handleDebugOverlayToggle(const SDL_Event &event) -> void;
+  auto handleTextInput(const SDL_Event &event, TTF_Font *font, SDL_Renderer *renderer, bool isBackspace = false) -> void;
+
 };
 
 #endif // DEMO_SCENE_HPP

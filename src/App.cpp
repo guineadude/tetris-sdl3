@@ -16,10 +16,13 @@ auto App::toggleSettings() -> void
 {
   toggleVsync();
   toggleFramerateCap();
+  const bool isRenderingUserInput{m_scene.getIsEnteringText()};
+  
   SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
-               "Toggling settings: VSync is now %s, Framerate cap is now %s",
+               "Toggling settings: VSync is now %s, Framerate cap is now %s, User input is now %s",
                m_vsyncEnabled ? "enabled" : "disabled",
-               m_capFramerate ? "capped" : "uncapped");
+               m_capFramerate ? "capped" : "uncapped",
+               isRenderingUserInput ? "rendering" : "not rendering");
 }
 
 auto App::toggleVsync() -> void
@@ -154,7 +157,7 @@ void App::handleEvents(SDL_Event *event, int &exitCode)
       }
     }
 
-    m_scene.handleEvent(*event, exitCode);
+    m_scene.handleEvent(*event, exitCode, m_font, m_renderer);
   }
 }
 
