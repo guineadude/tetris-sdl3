@@ -15,7 +15,7 @@ class Renderer
         Renderer(Renderer&&) = delete;
         Renderer& operator=(Renderer&&) = delete;
         
-        auto initialize(SDL_Renderer *renderer) -> bool;
+        [[nodiscard]] auto initialize(SDL_Renderer *renderer) -> bool;
         auto update() -> void;
         auto shutdown() -> void;
     private:

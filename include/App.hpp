@@ -14,11 +14,11 @@ class App
     App(App &&) = delete;
     App &operator=(App &&) = delete;
 
-    auto initialize() -> bool;
+    [[nodiscard]] auto initialize() -> bool;
     auto run() -> void;
     auto shutdown() -> int;
 
-    auto getRenderer() -> SDL_Renderer * { return m_renderer; }
+    [[nodiscard]] auto getRenderer() -> SDL_Renderer * { return m_renderer; }
     
   private:
     SDL_Window   *m_window         {nullptr};

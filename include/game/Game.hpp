@@ -12,12 +12,12 @@ class Game
         Game(Game&&) = delete;
         Game& operator=(Game&&) = delete;
 
-        auto initialize() -> bool;
+        [[nodiscard]] auto initialize() -> bool;
         auto update() -> void;
         auto shutdown() -> void;
 
-        auto board() noexcept -> Board& { return m_board; }
-        auto board() const noexcept -> const Board& { return m_board; }
+        [[nodiscard]] auto board() noexcept -> Board& { return m_board; }
+        [[nodiscard]] auto board() const noexcept -> const Board& { return m_board; }
     private:
         Board m_board {};
 };

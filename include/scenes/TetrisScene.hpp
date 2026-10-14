@@ -15,7 +15,7 @@ class TetrisScene
         TetrisScene(TetrisScene&&) = delete;
         TetrisScene& operator=(TetrisScene&&) = delete;
 
-        auto initialize(SDL_Renderer *renderer) -> bool;
+        [[nodiscard]] auto initialize(SDL_Renderer *renderer) -> bool;
         auto run() { update(); }
         auto update() -> void;
         auto shutdown() -> void;
