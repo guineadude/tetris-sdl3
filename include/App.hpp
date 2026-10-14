@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-#include <SDL3_ttf/SDL_ttf.h>
 
 class App
 {
@@ -20,7 +19,5 @@ class App
   private:
     SDL_Window *m_window{nullptr};
     SDL_Renderer *m_renderer{nullptr};
-    TTF_Font *m_font{nullptr};
     bool m_sdlInitialized{false};
-    bool m_ttfInitialized{false};
 };

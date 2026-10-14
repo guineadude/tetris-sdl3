@@ -14,13 +14,6 @@ auto App::initialize() -> bool
     }
     m_sdlInitialized = true;
 
-    if (!TTF_Init())
-    {
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "TTF_Init failed: %s", SDL_GetError());
-        return false;
-    }
-    m_ttfInitialized = true;
-
     m_window = SDL_CreateWindow("Tetris", 800, 600, 0);
     if (!m_window)
     {
@@ -32,13 +25,6 @@ auto App::initialize() -> bool
     if (!m_renderer)
     {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
-        return false;
-    }
-
-    m_font = TTF_OpenFont("assets/lazy.ttf", 30.0F);
-    if (!m_font)
-    {
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Font initialization failed: %s", SDL_GetError());
         return false;
     }
 
@@ -79,16 +65,6 @@ auto App::run() -> void
 
 auto App::shutdown() -> int
 {
-    if (m_font)
-    {
-        TTF_CloseFont(m_font);
-        m_font = nullptr;
-    }
-    if (m_ttfInitialized)
-    {
-        TTF_Quit();
-        m_ttfInitialized = false;
-    }
     if (m_renderer)
     {
         SDL_DestroyRenderer(m_renderer);
