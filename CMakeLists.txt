@@ -22,7 +22,7 @@ add_executable(tetris
     src/game/Piece.cpp
     src/game/Game.cpp
     src/scenes/TetrisScene.cpp
-    src/rendering/GameRenderer.cpp
+    src/rendering/Renderer.cpp
 )
 
 target_include_directories(tetris PRIVATE

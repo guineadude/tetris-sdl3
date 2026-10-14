@@ -39,36 +39,19 @@ auto App::initialize() -> bool
         return false;
     }
 
+    if(!m_tetrisScene.initialize(getRenderer()))
+    {
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "TetrisScene initialization failed");
+        return false;
+    }
+
     SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
     return true;
 }
 
 auto App::run() -> void
 {
-    if(!initializeGame()) {return;}
-
-    bool isRunning {true};
-    SDL_Event event {};
-
-    while (isRunning)
-    {
-        while (SDL_PollEvent(&event))
-        {
-            if (event.type == SDL_EVENT_QUIT)
-            {
-                isRunning = false;
-            }
-        }
-
-        if (!isRunning)
-        {
-            break;
-        }
-
-        SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, 255);
-        SDL_RenderClear(m_renderer);
-        SDL_RenderPresent(m_renderer);
-    }
+    m_tetrisScene.run();
 }
 
 auto App::shutdown() -> int
@@ -88,5 +71,5 @@ auto App::shutdown() -> int
         SDL_Quit();
         m_sdlInitialized = false;
     }
-    return m_exitCode;
+  return m_exitCode;
 }
