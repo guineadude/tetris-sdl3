@@ -4,7 +4,7 @@
 int main ()
 {
     App app {};
-    int exitCode {0};
+    int exitCode {};
 
     if (app.initialize()) {
         app.run();

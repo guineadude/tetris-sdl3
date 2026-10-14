@@ -5,16 +5,16 @@
 #include "game/Game.hpp"
 #include "rendering/Renderer.hpp"
 
-namespace
-{
-    struct RendererData
-    {
-    };
-}
-
 class TetrisScene 
 {
     public:
+        TetrisScene() = default;
+        ~TetrisScene();
+        TetrisScene(const TetrisScene&) = delete;
+        TetrisScene& operator=(const TetrisScene&) = delete;
+        TetrisScene(TetrisScene&&) = delete;
+        TetrisScene& operator=(TetrisScene&&) = delete;
+
         auto initialize(SDL_Renderer *renderer) -> bool;
         auto run() { update(); }
         auto update() -> void;

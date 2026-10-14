@@ -1,11 +1,6 @@
 #include "App.hpp"
 
-namespace
-{
-    constexpr int  k_windowWidth   {800};
-    constexpr int  k_windowHeight  {600};
-    constexpr char k_windowTitle[] {"Tetris"};
-}
+#include "Constants.hpp"
 
 App::~App()
 {
@@ -21,7 +16,9 @@ auto App::initialize() -> bool
     }
     m_sdlInitialized = true;
 
-    if (m_window = SDL_CreateWindow(k_windowTitle, k_windowWidth, k_windowHeight, 0); !m_window)
+    if (m_window = SDL_CreateWindow(tetris::constants::windowTitle,
+                                    tetris::constants::windowWidth,
+                                    tetris::constants::windowHeight, 0); !m_window)
     {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
         return false;

@@ -1,5 +1,10 @@
 #include "scenes/TetrisScene.hpp"
 
+TetrisScene::~TetrisScene()
+{
+    shutdown();
+}
+
 auto TetrisScene::initialize(SDL_Renderer *renderer) -> bool
 {
     if(!m_game.initialize())
