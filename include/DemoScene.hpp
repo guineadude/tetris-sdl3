@@ -27,14 +27,17 @@ public:
                      KeyEventMode systemKeyEvents = KeyEventMode::KeyDownOnly);
 
   auto loadAssets(SDL_Renderer *renderer, TTF_Font *font, int windowWidth, int windowHeight) -> bool;
-  auto handleEvent(const SDL_Event &event, int &exitCode, TTF_Font *font, SDL_Renderer *renderer) -> void;
+  auto handleEvent(const SDL_Event &event, int &exitCode, TTF_Font *font, SDL_Renderer *renderer,
+                   SDL_Window *window) -> void;
   auto render(SDL_Renderer *renderer) -> void;
 
   auto getIsEnteringText() const -> bool { return m_renderUserInput; }
-  auto setIsEnteringText(bool isEnteringText) -> void { m_renderUserInput = isEnteringText; }
+  auto setIsEnteringText(bool isEnteringText, SDL_Window *window) -> void;
 
 private:
   static constexpr SDL_Color k_defaultFontColor{0x00, 0x00, 0xFF, 0xFF};
+  static constexpr int k_inputWidth{400};
+  static constexpr int k_inputHeight{50};
 
   Texture m_textTexture{};
   Texture m_userInputTexture{};
@@ -66,7 +69,6 @@ private:
   auto handlePlayerInput(const SDL_Event &event) -> void;
   auto handleDebugOverlayToggle(const SDL_Event &event) -> void;
   auto handleTextInput(const SDL_Event &event, TTF_Font *font, SDL_Renderer *renderer, bool isBackspace = false) -> void;
-
 };
 
 #endif // DEMO_SCENE_HPP

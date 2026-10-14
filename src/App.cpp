@@ -98,7 +98,6 @@ bool App::init()
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to set VSync: %s", SDL_GetError());
     return false;
   }
-  SDL_StartTextInput(m_window);
   SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
   return true;
@@ -157,7 +156,7 @@ void App::handleEvents(SDL_Event *event, int &exitCode)
       }
     }
 
-    m_scene.handleEvent(*event, exitCode, m_font, m_renderer);
+    m_scene.handleEvent(*event, exitCode, m_font, m_renderer, m_window);
   }
 }
 

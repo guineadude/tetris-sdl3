@@ -81,7 +81,8 @@ auto DemoScene::getInputAction(const SDL_Event &event) const -> InputAction
   return inputAction;
 }
 
-auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode, TTF_Font *font, SDL_Renderer *renderer) -> void
+auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode, TTF_Font *font,
+                            SDL_Renderer *renderer, SDL_Window *window) -> void
 {
   (void)exitCode;
 
@@ -96,7 +97,7 @@ auto DemoScene::handleEvent(const SDL_Event &event, int &exitCode, TTF_Font *fon
     handleDebugOverlayToggle(event);
     break;
   case InputAction::ToggleTextEntry:
-    setIsEnteringText(!getIsEnteringText());
+    setIsEnteringText(!getIsEnteringText(), window);
     break;
   case InputAction::TextInput:
     handleTextInput(event, font, renderer, false);
@@ -119,13 +120,23 @@ auto DemoScene::render(SDL_Renderer *renderer) -> void
 
   if(m_renderUserInput)
   {
-    const SDL_FRect user_TextRect{(m_windowWidth - m_textTexture.getWidth()) * 0.5f,
-                          (m_windowHeight - m_textTexture.getHeight()) * 0.75f,
-                          static_cast<float>(m_textTexture.getWidth()),
-                          static_cast<float>(m_textTexture.getHeight())};
-                        
-    m_userInputTexture.render(renderer, user_TextRect);
+    const SDL_FRect inputArea{
+        (m_windowWidth - k_inputWidth) * 0.5f,
+        m_windowHeight * 0.75f,
+        k_inputWidth,
+        k_inputHeight
+    };
 
+    if (m_userInputTexture.getTexture())
+    {
+      const SDL_FRect inputText{
+          inputArea.x,
+          inputArea.y + (inputArea.h - m_userInputTexture.getHeight()) * 0.5f,
+          static_cast<float>(m_userInputTexture.getWidth()),
+          static_cast<float>(m_userInputTexture.getHeight())
+      };
+      m_userInputTexture.render(renderer, inputText);
+    }
   }
 }
 
@@ -139,15 +150,45 @@ auto DemoScene::handleDebugOverlayToggle(const SDL_Event &event) -> void
     m_toggleDebugOverlay_Callback ? m_toggleDebugOverlay_Callback() : SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Debug overlay callback nullptr");
 }
 
-auto DemoScene::handleTextInput(const SDL_Event &event, TTF_Font *font, SDL_Renderer *renderer, bool isBackspace) -> void
+auto DemoScene::setIsEnteringText(bool isEnteringText, SDL_Window *window) -> void
 {
-  if (isBackspace && !m_inputText.empty())
+  if (m_renderUserInput == isEnteringText)
   {
-    m_inputText.pop_back();
+    return;
+  }
+
+  const bool success{isEnteringText ? SDL_StartTextInput(window)
+                                    : SDL_StopTextInput(window)};
+  if (!success)
+  {
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
+                 "Failed to %s text input: %s",
+                 isEnteringText ? "start" : "stop", SDL_GetError());
+    return;
+  }
+
+  m_renderUserInput = isEnteringText;
+}
+
+auto DemoScene::handleTextInput(const SDL_Event &event, TTF_Font *font,
+                                SDL_Renderer *renderer, bool isBackspace) -> void
+{
+  if (isBackspace)
+  {
+    if (!m_inputText.empty())
+    {
+      m_inputText.pop_back();
+    }
   }
   else
   {
     m_inputText.append(event.text.text);
+  }
+
+  if (m_inputText.empty())
+  {
+    m_userInputTexture.destroy();
+    return;
   }
 
   if (!m_userInputTexture.loadFromRenderedText(
