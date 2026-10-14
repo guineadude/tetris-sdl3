@@ -1,0 +1,20 @@
+# Build output
+build/
+out/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Machine-specific dependency paths
+CMakeUserPresets.json
+
+# Compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.dll
+*.exe

@@ -1,14 +1,14 @@
 
-#include "game/Game.hpp"
+#include "App.hpp"
 
 int main ()
 {
-    Game game {};
+    App app {};
     int exitCode {0};
-    
-    if (game.initialize()) {
-        game.run();
-        exitCode = game.shutdown();
+
+    if (app.initialize()) {
+        app.run();
+        exitCode = app.shutdown();
     }
     
     return exitCode;
