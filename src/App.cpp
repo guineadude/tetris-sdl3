@@ -1,5 +1,12 @@
 #include "App.hpp"
 
+namespace
+{
+    constexpr int  k_windowWidth   {800};
+    constexpr int  k_windowHeight  {600};
+    constexpr char k_windowTitle[] {"Tetris"};
+}
+
 App::~App()
 {
     shutdown();
@@ -14,15 +21,13 @@ auto App::initialize() -> bool
     }
     m_sdlInitialized = true;
 
-    m_window = SDL_CreateWindow("Tetris", 800, 600, 0);
-    if (!m_window)
+    if (m_window = SDL_CreateWindow(k_windowTitle, k_windowWidth, k_windowHeight, 0); !m_window)
     {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
         return false;
     }
 
-    m_renderer = SDL_CreateRenderer(m_window, nullptr);
-    if (!m_renderer)
+    if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer)
     {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
         return false;
@@ -40,8 +45,11 @@ auto App::initialize() -> bool
 
 auto App::run() -> void
 {
-    bool isRunning{true};
-    SDL_Event event;
+    if(!initializeGame()) {return;}
+
+    bool isRunning {true};
+    SDL_Event event {};
+
     while (isRunning)
     {
         while (SDL_PollEvent(&event))
@@ -80,5 +88,5 @@ auto App::shutdown() -> int
         SDL_Quit();
         m_sdlInitialized = false;
     }
-    return 0;
+    return m_exitCode;
 }

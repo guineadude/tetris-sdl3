@@ -13,11 +13,13 @@ class App
     App &operator=(App &&) = delete;
 
     auto initialize() -> bool;
+    auto initializeGame() -> bool;
     auto run() -> void;
     auto shutdown() -> int;
 
   private:
-    SDL_Window *m_window{nullptr};
-    SDL_Renderer *m_renderer{nullptr};
-    bool m_sdlInitialized{false};
+    SDL_Window   *m_window         {nullptr};
+    SDL_Renderer *m_renderer       {nullptr};
+    bool          m_sdlInitialized {false};
+    int           m_exitCode       {0};
 };
