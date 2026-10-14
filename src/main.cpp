@@ -1,12 +1,15 @@
-#include "main.hpp"
 
-int main(int argc, char *argv[]) {
-  App app;
-  int exitCode{};
+#include "game/Game.hpp"
 
-  if (app.init()) {
-    exitCode = app.run();
-  }
-
-  return exitCode;
+int main ()
+{
+    Game game {};
+    int exitCode {0};
+    
+    if (game.initialize()) {
+        game.run();
+        exitCode = game.shutdown();
+    }
+    
+    return exitCode;
 }
