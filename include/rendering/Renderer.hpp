@@ -21,5 +21,6 @@ class Renderer
     private:
         SDL_Renderer *m_renderer {nullptr};
 
+        auto drawBackground() -> void;
         auto drawGrid() -> void;
 };

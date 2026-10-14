@@ -24,18 +24,18 @@ auto Renderer::initialize(SDL_Renderer *renderer) -> bool
     
 auto Renderer::update() -> void
 {
-    SDL_SetRenderDrawColor(m_renderer, k_bgColor.r, k_bgColor.g,
-                           k_bgColor.b, k_bgColor.a);
-    SDL_RenderClear(m_renderer);
-
+    drawBackground();
     drawGrid();
 
     SDL_RenderPresent(m_renderer);
 }
 
-auto Renderer::shutdown() -> void
+auto Renderer::drawBackground() -> void
 {
+    SDL_SetRenderDrawColor(m_renderer, k_bgColor.r, k_bgColor.g, k_bgColor.b, k_bgColor.a);
+    SDL_RenderClear(m_renderer);
 }
+
 
 auto Renderer::drawGrid() -> void
 {
@@ -49,21 +49,23 @@ auto Renderer::drawGrid() -> void
     constexpr int gridTop  {tetris::constants::boardMargin};
 
     SDL_SetRenderDrawColor(m_renderer, k_lineColor.r, k_lineColor.g,
-                           k_lineColor.b, k_lineColor.a);
-
-    for (auto i {0uz}; i <= tetris::constants::boardRows; ++i)
+        k_lineColor.b, k_lineColor.a);
+        
+    for (auto index {0uz}; index <= tetris::constants::boardRows; ++index)
     {
         SDL_RenderLine(m_renderer,
-                           gridLeft, gridTop + i * tetris::constants::cellSize,
-                           gridLeft + gridWidth, gridTop + i * tetris::constants::cellSize
-                          );
+            gridLeft, (gridTop + (index * tetris::constants::cellSize)),
+            gridLeft + gridWidth, (gridTop + (index * tetris::constants::cellSize))
+        );
     }
-
-    for (auto i {0uz}; i <= tetris::constants::boardColumns; ++i)
+    
+    for (auto index {0uz}; index <= tetris::constants::boardColumns; ++index)
     {
         SDL_RenderLine(m_renderer,
-                           gridLeft + i * tetris::constants::cellSize, gridTop,
-                           gridLeft + i * tetris::constants::cellSize, gridTop + gridHeight
-                       );
+            (gridLeft + (index * tetris::constants::cellSize)), gridTop,
+            (gridLeft + (index * tetris::constants::cellSize)), gridTop + gridHeight
+        );
     }
 }
+
+auto Renderer::shutdown() -> void {}
