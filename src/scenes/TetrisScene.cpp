@@ -27,6 +27,10 @@ auto TetrisScene::update() -> void
             if(event.type == SDL_EVENT_QUIT)
                 running = false;
         }
+        if(event.type == SDL_EVENT_KEY_DOWN)
+        {
+
+        }
 
         m_game.update();
         m_renderer.update(m_game.board());

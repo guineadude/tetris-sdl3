@@ -1,7 +1,5 @@
 #include "App.hpp"
 
-#include "Constants.hpp"
-
 App::~App()
 {
     shutdown();
@@ -48,7 +46,16 @@ auto App::initialize() -> bool
 
 auto App::run() -> void
 {
+    const std::uint64_t startTicks {frameTimer()};
     m_tetrisScene.run();
+}
+
+auto App::frameTimer() -> std::uint64_t
+{
+    const std::uint64_t currentTick {SDL_GetTicks()};
+    float deltaTime {static_cast<float>(currentTick - m_lastTick) / 1000.0f}; 
+    m_lastTick = currentTick;
+    return currentTick;
 }
 
 auto App::shutdown() -> int

@@ -6,8 +6,6 @@
 #include "Constants.hpp"
 #include "game/Board.hpp"
 
-class Board;
-
 class Renderer
 {
     public:
@@ -26,7 +24,7 @@ class Renderer
         SDL_Renderer *m_renderer {nullptr};
 
         auto drawBackground() -> void;
-        auto drawGrid(const Board &board) -> void;
+        auto drawGrid() -> void;
         auto drawCells(const Board &board) -> void;
 
 };

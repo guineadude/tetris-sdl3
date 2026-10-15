@@ -1,8 +1,10 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <cstdint>
 
 #include "scenes/TetrisScene.hpp"
+#include "Constants.hpp"
 
 class App
 {
@@ -16,6 +18,7 @@ class App
 
     [[nodiscard]] auto initialize() -> bool;
     auto run() -> void;
+    auto frameTimer() -> std::uint64_t;
     auto shutdown() -> int;
 
     [[nodiscard]] auto getRenderer() -> SDL_Renderer * { return m_renderer; }
@@ -26,4 +29,5 @@ class App
     TetrisScene   m_tetrisScene    {};
     int           m_exitCode       {};
     bool          m_sdlInitialized {false};
+    std::uint64_t m_lastTick       {};
 };

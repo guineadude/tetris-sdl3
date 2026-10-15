@@ -6,10 +6,16 @@
 
 #include "Constants.hpp"
 
-enum class State
+enum class Shape
 {
-    Empty,
-    Occupied
+    I,
+    O,
+    T,
+    S,
+    Z,
+    J,
+    L,
+    None
 };
 
 enum class Color : std::uint32_t
@@ -21,11 +27,14 @@ enum class Color : std::uint32_t
     Cyan    = 0x00FFFF,
     Magenta = 0xFF00FF,
     White   = 0xFFFFFF,
-    Black   = 0x000000
+    Black   = 0x000000,
+    None    = 0x000000
 };
 
 struct Cell
 {
+  enum class State { Empty, Occupied };
+
   State state{State::Empty};
   Color color{};
 
@@ -37,18 +46,6 @@ struct Cell
     {
         return this->color;
     }
-};
-
-enum class Shape
-{
-    I,
-    O,
-    T,
-    S,
-    Z,
-    J,
-    L,
-    None
 };
 
 class Board
