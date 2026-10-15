@@ -6,6 +6,9 @@ namespace
     constexpr SDL_Color k_lineColor {0xFF, 0xFF, 0xFF, 0xFF};
 }
 
+constexpr SDL_Color toSDLColor(Color color);
+
+
 Renderer::~Renderer()
 {
     shutdown();
@@ -22,10 +25,11 @@ auto Renderer::initialize(SDL_Renderer *renderer) -> bool
     return true;
 }
     
-auto Renderer::update() -> void
+auto Renderer::update(const Board &board) -> void
 {
     drawBackground();
-    drawGrid();
+    drawGrid(board);
+    drawCells(board);
 
     SDL_RenderPresent(m_renderer);
 }
@@ -36,8 +40,34 @@ auto Renderer::drawBackground() -> void
     SDL_RenderClear(m_renderer);
 }
 
+auto Renderer::drawCells(const Board &board) -> void
+{
+    constexpr int gridLeft {tetris::constants::boardMargin};
+    constexpr int gridTop  {tetris::constants::boardMargin};
 
-auto Renderer::drawGrid() -> void
+    for (std::size_t row {0}; row < tetris::constants::boardRows; ++row)
+    {
+        for (std::size_t col {0}; col < tetris::constants::boardColumns; ++col)
+        {
+            const auto &cell = board.getCell(row, col);
+            if (cell.isOccupied())
+            {
+                const auto color = toSDLColor(cell.getColor());
+                SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+                
+                const SDL_FRect cellRect{
+                    static_cast<float>(gridLeft + col * tetris::constants::cellSize),
+                    static_cast<float>(gridTop + row * tetris::constants::cellSize),
+                    static_cast<float>(tetris::constants::cellSize),
+                    static_cast<float>(tetris::constants::cellSize)
+                };
+
+                SDL_RenderFillRect(m_renderer, &cellRect);
+            }
+        }
+    }
+}
+auto Renderer::drawGrid(const Board &board) -> void
 {
     constexpr int gridWidth {
         static_cast<int>(tetris::constants::boardColumns) * tetris::constants::cellSize
@@ -69,3 +99,14 @@ auto Renderer::drawGrid() -> void
 }
 
 auto Renderer::shutdown() -> void {}
+
+constexpr auto toSDLColor(Color color) -> SDL_Color
+{
+    const auto rgb = static_cast<std::uint32_t>(color);
+    return {
+        static_cast<std::uint8_t>((rgb >> 16) & 0xFF),
+        static_cast<std::uint8_t>((rgb >> 8) & 0xFF),
+        static_cast<std::uint8_t>(rgb & 0xFF),
+        0xFF
+    };
+}

@@ -29,7 +29,7 @@ auto TetrisScene::update() -> void
         }
 
         m_game.update();
-        m_renderer.update();
+        m_renderer.update(m_game.board());
     }
 
 

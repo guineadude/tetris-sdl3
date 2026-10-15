@@ -12,23 +12,49 @@ enum class State
     Occupied
 };
 
+enum class Color : std::uint32_t
+{
+    Red     = 0xFF0000,
+    Green   = 0x00FF00,
+    Blue    = 0x0000FF,
+    Yellow  = 0xFFFF00,
+    Cyan    = 0x00FFFF,
+    Magenta = 0xFF00FF,
+    White   = 0xFFFFFF,
+    Black   = 0x000000
+};
+
 struct Cell
 {
   State state{State::Empty};
-  SDL_Color color{};
+  Color color{};
 
     [[nodiscard]] auto isOccupied() const -> bool
     {
         return this->state == State::Occupied;
     }
-    [[nodiscard]] auto getColor() const -> SDL_Color
+    [[nodiscard]] auto getColor() const -> Color
     {
         return this->color;
     }
 };
 
-class Board
+enum class Shape
 {
+    I,
+    O,
+    T,
+    S,
+    Z,
+    J,
+    L,
+    None
+};
+
+class Board
+{  
+  private:
+    std::array<std::array<Cell, tetris::constants::boardColumns>, tetris::constants::boardRows> m_cells{};
   public:
     Board() = default;
     ~Board() = default;
@@ -37,11 +63,16 @@ class Board
     Board(Board&&) = delete;
     Board& operator=(Board&&) = delete;
 
+    [[nodiscard]] auto getCell(std::size_t row, std::size_t col) -> Cell&
+    {
+        return m_cells.at(row).at(col);
+    }
     [[nodiscard]] auto getCell(std::size_t row, std::size_t col) const -> const Cell&
     {
-        return m_cells[row][col];
+        return m_cells.at(row).at(col);
     }
-
-  private:
-    std::array<std::array<Cell, tetris::constants::boardColumns>, tetris::constants::boardRows> m_cells{};
+    auto setCell(std::size_t row, std::size_t col, const Cell& cell) -> void
+    {
+        m_cells.at(row).at(col) = cell;
+    }
 };

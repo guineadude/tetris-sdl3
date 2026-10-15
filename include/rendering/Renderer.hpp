@@ -4,6 +4,9 @@
 #include <cstddef>
 
 #include "Constants.hpp"
+#include "game/Board.hpp"
+
+class Board;
 
 class Renderer
 {
@@ -16,11 +19,14 @@ class Renderer
         Renderer& operator=(Renderer&&) = delete;
         
         [[nodiscard]] auto initialize(SDL_Renderer *renderer) -> bool;
-        auto update() -> void;
+        auto update(const Board &board) -> void;
         auto shutdown() -> void;
+
     private:
         SDL_Renderer *m_renderer {nullptr};
 
         auto drawBackground() -> void;
-        auto drawGrid() -> void;
+        auto drawGrid(const Board &board) -> void;
+        auto drawCells(const Board &board) -> void;
+
 };
