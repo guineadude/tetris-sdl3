@@ -46,16 +46,33 @@ auto App::initialize() -> bool
 
 auto App::run() -> void
 {
-    const std::uint64_t startTicks {frameTimer()};
-    m_tetrisScene.run();
+    m_lastTick = SDL_GetTicks();
+
+    while (m_tetrisScene.processEvents())
+    {
+        while (isUpdateDue())
+            m_tetrisScene.update();
+
+        m_tetrisScene.render();
+    }
+}
+
+auto App::isUpdateDue() -> bool
+{
+    m_updateAccumulator += frameTimer();
+    if (m_updateAccumulator < tetris::constants::gameUpdateIntervalMs)
+        return false;
+
+    m_updateAccumulator -= tetris::constants::gameUpdateIntervalMs;
+    return true;
 }
 
 auto App::frameTimer() -> std::uint64_t
 {
     const std::uint64_t currentTick {SDL_GetTicks()};
-    float deltaTime {static_cast<float>(currentTick - m_lastTick) / 1000.0f}; 
+    const std::uint64_t elapsedTicks {currentTick - m_lastTick};
     m_lastTick = currentTick;
-    return currentTick;
+    return elapsedTicks;
 }
 
 auto App::shutdown() -> int

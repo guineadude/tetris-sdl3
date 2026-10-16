@@ -6,18 +6,6 @@
 
 #include "Constants.hpp"
 
-enum class Shape
-{
-    I,
-    O,
-    T,
-    S,
-    Z,
-    J,
-    L,
-    None
-};
-
 enum class Color : std::uint32_t
 {
     Red     = 0xFF0000,

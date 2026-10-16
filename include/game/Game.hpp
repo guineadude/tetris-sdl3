@@ -20,4 +20,8 @@ class Game
         [[nodiscard]] auto board() const noexcept -> const Board& { return m_board; }
     private:
         Board m_board {};
+        double m_dropElapsedSeconds {};    
+
+        auto dropTiles() -> void;
+        auto spawnTiles() -> void;
 };

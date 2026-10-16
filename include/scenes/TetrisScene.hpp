@@ -16,10 +16,12 @@ class TetrisScene
         TetrisScene& operator=(TetrisScene&&) = delete;
 
         [[nodiscard]] auto initialize(SDL_Renderer *renderer) -> bool;
-        auto run() { update(); }
+        [[nodiscard]] auto processEvents() -> bool;
         auto update() -> void;
+        auto render() -> void;
         auto shutdown() -> void;
     private:
         Game     m_game     {};
         Renderer m_renderer {};
+        bool     m_running  {true};
 };

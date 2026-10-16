@@ -15,28 +15,26 @@ auto TetrisScene::initialize(SDL_Renderer *renderer) -> bool
     return true;
 }
 
-auto TetrisScene::update() -> void
+auto TetrisScene::processEvents() -> bool
 {
     SDL_Event event {};
-    bool running {true};
-
-    while(running)
+    while (SDL_PollEvent(&event))
     {
-        if(SDL_PollEvent(&event))
-        {
-            if(event.type == SDL_EVENT_QUIT)
-                running = false;
-        }
-        if(event.type == SDL_EVENT_KEY_DOWN)
-        {
-
-        }
-
-        m_game.update();
-        m_renderer.update(m_game.board());
+        if (event.type == SDL_EVENT_QUIT)
+            m_running = false;
     }
 
+    return m_running;
+}
 
+auto TetrisScene::update() -> void
+{
+    m_game.update();
+}
+
+auto TetrisScene::render() -> void
+{
+    m_renderer.update(m_game.board());
 }
 
 auto TetrisScene::shutdown() -> void
