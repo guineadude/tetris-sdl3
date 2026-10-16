@@ -43,10 +43,11 @@ auto Renderer::initialize(SDL_Renderer *renderer) -> bool
     return true;
 }
     
-auto Renderer::update(const Board &board) -> void
+auto Renderer::update(const Board& board, const std::optional<Piece>& activePiece) -> void
 {
     drawBackground();
     drawCells(board);
+    drawActivePiece(activePiece);
     drawGrid();
 
     SDL_RenderPresent(m_renderer);
@@ -79,6 +80,26 @@ auto Renderer::drawCells(const Board &board) -> void
     };
 
     forEachCell(board, fillCells);
+}
+
+auto Renderer::drawActivePiece(const std::optional<Piece>& activePiece) -> void
+{
+    if (!activePiece)
+        return;
+
+    const auto color = toSDLColor(Color::Magenta);
+    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+
+    for (const auto& cell : occupiedCells(*activePiece))
+    {
+        const SDL_FRect cellRect{
+            static_cast<float>(gridLeft + cell.col * tetris::constants::cellSize),
+            static_cast<float>(gridTop + cell.row * tetris::constants::cellSize),
+            static_cast<float>(tetris::constants::cellSize),
+            static_cast<float>(tetris::constants::cellSize)
+        };
+        SDL_RenderFillRect(m_renderer, &cellRect);
+    }
 }
 
 auto Renderer::drawGrid() -> void
