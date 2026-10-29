@@ -2,179 +2,95 @@
 
 App::~App()
 {
-  if (m_font)
-  {
-    TTF_CloseFont(m_font);
-  }
-  TTF_Quit();
-  SDL_DestroyRenderer(m_renderer);
-  SDL_DestroyWindow(m_window);
-  SDL_Quit();
+    shutdown();
 }
 
-auto App::toggleSettings() -> void
+auto App::initialize() -> bool
 {
-  toggleVsync();
-  toggleFramerateCap();
-  const bool isRenderingUserInput{m_scene.getIsEnteringText()};
-  
-  SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION,
-               "Toggling settings: VSync is now %s, Framerate cap is now %s, User input is now %s",
-               m_vsyncEnabled ? "enabled" : "disabled",
-               m_capFramerate ? "capped" : "uncapped",
-               isRenderingUserInput ? "rendering" : "not rendering");
-}
-
-auto App::toggleVsync() -> void
-{
-  m_vsyncEnabled = !m_vsyncEnabled;
-  SDL_SetRenderVSync(m_renderer, m_vsyncEnabled);
-}
-
-auto App::toggleFramerateCap() -> void
-{
-  m_capFramerate = !m_capFramerate;
-}
-
-auto App::initializeWindow(std::string_view name, int width, int height) -> bool
-{
-  if (m_window = SDL_CreateWindow(name.data(), width, height, 0); !m_window)
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
-    return false;
-  }
-  return true;
-}
-
-auto App::initializeRenderer() -> bool
-{
-  if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer)
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
-    return false;
-  }
-  return true;
-}
-
-auto App::initializeFont(std::string_view path, int fontSize) -> bool
-{
-  if (m_font = TTF_OpenFont(path.data(), fontSize); !m_font)
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Font initialization failed: %s", SDL_GetError());
-    return false;
-  }
-  return true;
-}
-
-bool App::init()
-{
-  if (!SDL_Init(SDL_INIT_VIDEO))
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init failed: %s", SDL_GetError());
-    return false;
-  }
-  if (!TTF_Init())
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "TTF_Init failed: %s", SDL_GetError());
-    return false;
-  }
-  if (!initializeWindow("Tetris"))
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
-    return false;
-  }
-  if (!initializeRenderer())
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
-    return false;
-  }
-  if (!initializeFont())
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Font initialization failed: %s", SDL_GetError());
-    return false;
-  }
-  if (!SDL_SetRenderVSync(m_renderer, 1))
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to set VSync: %s", SDL_GetError());
-    return false;
-  }
-  SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
-
-  return true;
-}
-
-int App::run()
-{
-  int exitCode{};
-
-  SDL_Event event;
-  SDL_zero(event);
-
-  if (!m_scene.loadAssets(m_renderer, m_font, k_defaultWidth,
-                          k_defaultHeight))
-  {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to load scene assets: %s", SDL_GetError());
-    return 2;
-  }
-
-  while (exitCode == 0)
-  {
-    handleEvents(&event, exitCode);
-    render();
-  }
-
-  return exitCode;
-}
-
-void App::render()
-{
-  // updating settings
-  tick();
-
-  // rendering 
-  SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-  SDL_RenderClear(m_renderer);
-  m_scene.render(m_renderer);
-  SDL_RenderPresent(m_renderer);
-}
-
-void App::handleEvents(SDL_Event *event, int &exitCode)
-{
-  while (SDL_PollEvent(event) == true && exitCode == 0)
-  {
-    if (event->type == SDL_EVENT_QUIT)
+    if (!SDL_Init(SDL_INIT_VIDEO))
     {
-      exitCode = -1;
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "SDL_Init failed: %s", SDL_GetError());
+        return false;
     }
-    if (event->type == SDL_EVENT_KEY_DOWN)
+    m_sdlInitialized = true;
+
+    if (m_window = SDL_CreateWindow(tetris::constants::windowTitle,
+                                    tetris::constants::windowWidth,
+                                    tetris::constants::windowHeight, 0); !m_window)
     {
-      switch (event->key.key)
-      {
-      case SDLK_ESCAPE:
-        exitCode = -1;
-        break;
-      }
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Window initialization failed: %s", SDL_GetError());
+        return false;
     }
 
-    m_scene.handleEvent(*event, exitCode, m_font, m_renderer, m_window);
-  }
+    if (m_renderer = SDL_CreateRenderer(m_window, nullptr); !m_renderer)
+    {
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Renderer initialization failed: %s", SDL_GetError());
+        return false;
+    }
+
+    if (!SDL_SetRenderVSync(m_renderer, 1))
+    {
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Failed to set VSync: %s", SDL_GetError());
+        return false;
+    }
+
+    if(!m_tetrisScene.initialize(getRenderer()))
+    {
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "TetrisScene initialization failed");
+        return false;
+    }
+
+    SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+    return true;
 }
 
-void App::tick()
+auto App::run() -> void
 {
-  if (!m_capFramerate)
-  {
-    return;
-  }
+    m_lastTick = SDL_GetTicks();
 
-  const Uint64 targetFrameNs{1'000'000'000ull / static_cast<Uint64>(m_maxFPS)};
-  const Uint64 currentTicks{SDL_GetTicksNS()};
-  const Uint64 elapsedTicks{currentTicks - m_lastTickCount};
+    while (m_tetrisScene.processEvents())
+    {
+        while (isUpdateDue())
+            m_tetrisScene.update();
 
-  if (elapsedTicks < targetFrameNs) // if time since last tick is less than target frame time
-  {
-    SDL_DelayNS(targetFrameNs - elapsedTicks); // delay to maintain target frame rate
-  }
+        m_tetrisScene.render();
+    }
+}
 
-  m_lastTickCount = currentTicks;
+auto App::isUpdateDue() -> bool
+{
+    m_updateAccumulator += frameTimer();
+    if (m_updateAccumulator < tetris::constants::gameUpdateIntervalMs)
+        return false;
+
+    m_updateAccumulator -= tetris::constants::gameUpdateIntervalMs;
+    return true;
+}
+
+auto App::frameTimer() -> std::uint64_t
+{
+    const std::uint64_t currentTick {SDL_GetTicks()};
+    const std::uint64_t elapsedTicks {currentTick - m_lastTick};
+    m_lastTick = currentTick;
+    return elapsedTicks;
+}
+
+auto App::shutdown() -> int
+{
+    if (m_renderer)
+    {
+        SDL_DestroyRenderer(m_renderer);
+        m_renderer = nullptr;
+    }
+    if (m_window)
+    {
+        SDL_DestroyWindow(m_window);
+        m_window = nullptr;
+    }
+    if (m_sdlInitialized)
+    {
+        SDL_Quit();
+        m_sdlInitialized = false;
+    }
+  return m_exitCode;
 }

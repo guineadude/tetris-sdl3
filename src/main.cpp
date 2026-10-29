@@ -1,12 +1,15 @@
-#include "main.hpp"
 
-int main(int argc, char *argv[]) {
-  App app;
-  int exitCode{};
+#include "App.hpp"
 
-  if (app.init()) {
-    exitCode = app.run();
-  }
+int main ()
+{
+    App app {};
+    int exitCode {};
 
-  return exitCode;
+    if (app.initialize()) {
+        app.run();
+        exitCode = app.shutdown();
+    }
+    
+    return exitCode;
 }

@@ -1,19 +1,25 @@
 {
-    "version": 3,
-    "cmakeMinimumRequired": {
-        "major": 3,
-        "minor": 21,
-        "patch": 0
-    },
-    "configurePresets": [
-        {
-            "name": "default",
-            "displayName": "Default (MinGW)",
-            "generator": "MinGW Makefiles",
-            "binaryDir": "${sourceDir}/build",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        }
-    ]
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default (MinGW)",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    }
+  ]
 }
